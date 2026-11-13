@@ -12,6 +12,8 @@ This release contains an important security update for Headplane that protects a
 
 ## Fixes
 
+- Enforce disabled API-key login on the server and protect session cookies, including expiration after logout.
+
 - Docker images now ship Node.js 24.22.1 and an agent built on Go 1.27.3 (fixes [GHSA-jhh3-g853-mxjc](https://github.com/tale/headplane/security/advisories/GHSA-jhh3-g853-mxjc), reported by [@trouze](https://github.com/trouze)).
 - A machine's page now requires permission to view machines, like the machines list. Previously anyone signed in could open it by its address.
 - The agent no longer creates a new auth key everytime it starts, which caused duplicate machines to be registered on Headscale 0.28.

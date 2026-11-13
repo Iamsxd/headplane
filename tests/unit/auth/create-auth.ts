@@ -5,6 +5,7 @@ import { createAuthService } from "~/server/web/auth";
 
 export function createTestAuth(
   options: {
+    secure?: boolean;
     headscaleApiKey?: string;
     proxyAuth?: {
       enabled: boolean;
@@ -28,7 +29,7 @@ export function createTestAuth(
     db,
     cookie: {
       name: "_hp_test",
-      secure: false,
+      secure: options.secure ?? false,
       maxAge: 3600,
     },
   });

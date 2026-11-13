@@ -256,6 +256,8 @@ export function createAuthService(opts: AuthServiceOptions): AuthService {
   async function encodeCookie(payload: CookiePayload, maxAge: number): Promise<string> {
     const cookie = createCookie(opts.cookie.name, {
       ...opts.cookie,
+      httpOnly: true,
+      sameSite: "lax",
       path: __PREFIX__,
       maxAge,
     });
@@ -273,6 +275,8 @@ export function createAuthService(opts: AuthServiceOptions): AuthService {
 
     const cookie = createCookie(opts.cookie.name, {
       ...opts.cookie,
+      httpOnly: true,
+      sameSite: "lax",
       path: __PREFIX__,
     });
 
@@ -574,10 +578,12 @@ export function createAuthService(opts: AuthServiceOptions): AuthService {
 
     const cookie = createCookie(opts.cookie.name, {
       ...opts.cookie,
+      httpOnly: true,
+      sameSite: "lax",
       path: __PREFIX__,
     });
 
-    return cookie.serialize("", { expires: new Date(0) });
+    return cookie.serialize("", { maxAge: 0, expires: new Date(0) });
   }
 
   async function findOrCreateUser(

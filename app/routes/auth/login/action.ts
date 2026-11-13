@@ -1,12 +1,16 @@
 import { redirect } from "react-router";
 
-import { authContext, headscaleContext } from "~/server/context";
+import { appConfigContext, authContext, headscaleContext } from "~/server/context";
 import { headscaleErrorMessage, isDataWithApiError } from "~/server/headscale/api/error-client";
 import log from "~/utils/log";
 
 import type { Route } from "./+types/page";
 
 export async function loginAction({ request, context }: Route.LoaderArgs) {
+  if (context.get(appConfigContext)?.oidc?.disable_api_key_login) {
+    return new Response("API key login is disabled", { status: 403 });
+  }
+
   const auth = context.get(authContext);
   const headscale = context.get(headscaleContext);
 

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { authContext, headscaleContext } from "~/server/context";
+import { appConfigContext, authContext, headscaleContext } from "~/server/context";
 
 // Helper to create a mock FormData with optional api_key
 function mockFormData(apiKey?: string): FormData {
@@ -44,9 +44,12 @@ interface MockAuth {
 // React Router 7 provides context values through context.get(contextKey).
 // This helper creates a fake AppLoadContext that returns the correct mock
 // depending on the context key that is requested.
-function createMockContext({ headscale, auth }: { headscale: MockHeadscale; auth: MockAuth }) {
+function createMockContext({ headscale, auth, disabled = false }: {
+  headscale: MockHeadscale; auth: MockAuth; disabled?: boolean;
+}) {
   return {
-    get: (context: typeof authContext | typeof headscaleContext) => {
+    get: (context: typeof authContext | typeof headscaleContext | typeof appConfigContext) => {
+      if (context === appConfigContext) return { oidc: { disable_api_key_login: disabled } };
       if (context === authContext) return auth;
       if (context === headscaleContext) return headscale;
       return undefined;

@@ -202,6 +202,24 @@ describe("transferOwnership", () => {
 });
 
 describe("session round-trip", () => {
+  test("session cookies protect both creation and logout and logout revokes a copied cookie", async () => {
+    const { auth } = createTestAuth({ secure: true });
+    const userId = await auth.findOrCreateUser("cookie-owner");
+    const header = await auth.createOidcSession(userId, { name: "Owner" });
+    for (const attribute of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/admin"]) {
+      expect(header).toContain(attribute);
+    }
+    const request = new Request("https://example.test/admin/", {
+      headers: { Cookie: header.split(";")[0] },
+    });
+    expect((await auth.require(request)).kind).toBe("oidc");
+    const expired = await auth.destroySession(request);
+    for (const attribute of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/admin", "Max-Age=0", "Expires=Thu, 01 Jan 1970"]) {
+      expect(expired).toContain(attribute);
+    }
+    await expect(auth.require(new Request(request))).rejects.toThrow();
+  });
+
   let auth: AuthService;
 
   beforeEach(() => {

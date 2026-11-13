@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import subprocess
 
-STAGE = Path('/root/headplane-language-20261113')
+STAGE = Path(os.environ.get('HEADPLANE_BUILD_STAGE', '/root/headplane-language-20261113'))
 UPSTREAM = Path('/root/headplane-setup-20261113/source/tale-headplane-6f0764e')
 OVERLAY = STAGE / 'overlay'
 DEPS = Path('/opt/headplane-zh-source')
@@ -44,12 +44,21 @@ def source_for(language):
         # Never copy Chinese page text into the English view.
         shutil.copytree(UPSTREAM / 'app', target / 'app', dirs_exist_ok=True)
         shared = ['utils/language.ts', 'utils/ui-language.ts', 'components/language-switcher.tsx',
-                  'routes/util/language.ts', 'server/request-listener.ts', 'server/language-view.ts']
+                  'routes/util/language.ts', 'server/request-listener.ts', 'server/language-view.ts',
+                  'server/web/auth.ts']
         for rel in shared:
             destination = target / 'app' / rel
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(OVERLAY / 'app' / rel, destination)
         replace(target / 'app/utils/ui-language.ts', '= "zh-CN"', '= "en"')
+        replace(target / 'app/routes/auth/login/action.ts',
+                'import { authContext, headscaleContext } from "~/server/context";',
+                'import { appConfigContext, authContext, headscaleContext } from "~/server/context";')
+        replace(target / 'app/routes/auth/login/action.ts',
+                'export async function loginAction({ request, context }: Route.LoaderArgs) {',
+                'export async function loginAction({ request, context }: Route.LoaderArgs) {\n'
+                '  if (context.get(appConfigContext)?.oidc?.disable_api_key_login) {\n'
+                '    return new Response("API key login is disabled", { status: 403 });\n  }\n')
         replace(target / 'app/root.tsx', 'import { getColorScheme } from "./utils/color-scheme";',
                 'import { getColorScheme } from "./utils/color-scheme";\nimport { UI_LANGUAGE } from "./utils/ui-language";')
         replace(target / 'app/root.tsx', 'lang="en"', 'lang={UI_LANGUAGE}')
@@ -75,6 +84,8 @@ def source_for(language):
         # Language preference tests are shared; upstream English assertions stay unchanged.
         for name in ['language.test.ts', 'language-action.test.ts']:
             shutil.copy2(OVERLAY / 'tests/unit/settings' / name, target / 'tests/unit/settings' / name)
+        for name in ['auth-service.test.ts', 'create-auth.ts', 'mfa-login-boundary.test.ts']:
+            shutil.copy2(OVERLAY / 'tests/unit/auth' / name, target / 'tests/unit/auth' / name)
     return target
 
 
