@@ -95,7 +95,7 @@ export default function TokenList({
       </TableList>
       <div className="flex items-center gap-2">
         <Input
-          aria-label={`Add to ${label}`}
+          aria-label={`添加到${label}`}
           className="w-full"
           disabled={isDisabled}
           invalid={draft.length > 0 && draftIsInvalid}

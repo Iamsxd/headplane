@@ -21,7 +21,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const headscaleConfig = context.get(headscaleConfigContext);
 
   if (!headscaleConfig.readable()) {
-    throw new Error("No configuration is available");
+    throw new Error("暂无可用配置");
   }
 
   const principal = await auth.require(request);
@@ -29,7 +29,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   if (!check) {
     // Not authorized to view this page
     throw new Error(
-      "You do not have permission to view this page. Please contact your administrator.",
+      "您无权查看此页面，请联系管理员。",
     );
   }
 
@@ -63,12 +63,12 @@ export default function Page() {
     <div className="flex max-w-(--breakpoint-lg) flex-col gap-16">
       {data.writable ? undefined : (
         <Notice>
-          The Headscale configuration is read-only. You cannot make changes to the configuration
+          Headscale 配置为只读，无法修改配置。
         </Notice>
       )}
       {data.access ? undefined : (
         <Notice>
-          Your permissions do not allow you to modify the DNS settings for this tailnet.
+          您无权修改此 Tailnet 的 DNS 设置。
         </Notice>
       )}
       <RenameTailnet isDisabled={isDisabled} name={data.baseDomain} />
@@ -83,13 +83,12 @@ export default function Page() {
       <div className="flex w-full flex-col sm:w-2/3">
         <h1 className="mb-4 text-2xl font-medium">Magic DNS</h1>
         <p className="mb-4">
-          Automatically register domain names for each device on the tailnet. Devices will be
-          accessible at{" "}
+          自动为 Tailnet 中的每台设备注册域名。启用 Magic DNS 后，可通过{" "}
           <Code>
             [device].
             {data.baseDomain}
           </Code>{" "}
-          when Magic DNS is enabled.
+          访问设备。
         </p>
         <ToggleMagic isDisabled={isDisabled} isEnabled={data.magicDns} />
       </div>

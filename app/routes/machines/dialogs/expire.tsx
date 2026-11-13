@@ -13,10 +13,9 @@ export default function Expire({ machine, isOpen, setIsOpen }: ExpireProps) {
   return (
     <Dialog isOpen={isOpen} onOpenChange={setIsOpen}>
       <DialogPanel variant="destructive">
-        <Title>Expire {machine.givenName}</Title>
+        <Title>使 {machine.givenName} 立即过期</Title>
         <Text>
-          This will disconnect the machine from your Tailnet. In order to reconnect, you will need
-          to re-authenticate from the device.
+          此操作将断开设备与您的 Tailnet 的连接。要重新连接，您需要在设备上重新进行身份验证。
         </Text>
         <input name="action_id" type="hidden" value="expire" />
         <input name="node_id" type="hidden" value={machine.id} />

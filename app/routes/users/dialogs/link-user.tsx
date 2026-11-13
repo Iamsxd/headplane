@@ -24,13 +24,12 @@ export default function LinkUser({
   return (
     <Dialog isOpen={isOpen} onOpenChange={setIsOpen}>
       <DialogPanel>
-        <Title>Link Headscale user for {displayName}</Title>
+        <Title>为 {displayName} 关联 Headscale 用户</Title>
         <Text className="mb-6">
-          Select which Headscale user this identity should be linked to. This controls which
-          machines they can manage and enables self-service features.
+          选择此身份要关联的 Headscale 用户。这决定了其可以管理的设备，并启用自助服务功能。
         </Text>
         {headscaleUsers.length === 0 ? (
-          <Notice>All Headscale users are already linked to other accounts.</Notice>
+          <Notice>所有 Headscale 用户均已关联其他账户。</Notice>
         ) : (
           <>
             <input name="action_id" type="hidden" value="link_user" />
@@ -45,11 +44,11 @@ export default function LinkUser({
               name="headscale_user_id"
               required
             >
-              <option value="">Select a Headscale user...</option>
+              <option value="">选择 Headscale 用户…</option>
               {headscaleUsers.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.name}
-                  {u.id === currentLink ? " (current)" : ""}
+                  {u.id === currentLink ? "（当前）" : ""}
                 </option>
               ))}
             </select>

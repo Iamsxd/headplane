@@ -47,7 +47,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   if (!auth.can(principal, Capabilities.read_machines)) {
     throw new Error(
-      "You do not have permission to view this page. Please contact your administrator.",
+      "您没有权限查看此页面。请联系管理员。",
     );
   }
 
@@ -242,11 +242,11 @@ export default function Page({ loaderData }: Route.ComponentProps) {
     <>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col">
-          <h1 className="mb-2 text-2xl font-medium">Machines</h1>
+          <h1 className="mb-2 text-2xl font-medium">设备</h1>
           <p>
-            Manage the devices connected to your Tailnet.{" "}
+            管理已连接到您的 Tailnet 的设备。{" "}
             <Link external styled to="https://tailscale.com/kb/1372/manage-devices">
-              Learn more
+              了解更多
             </Link>
           </p>
         </div>
@@ -260,16 +260,16 @@ export default function Page({ loaderData }: Route.ComponentProps) {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative w-64">
           <Input
-            label="Search machines"
+            label="搜索设备"
             labelHidden
             maxLength={100}
             onChange={setSearchQuery}
-            placeholder="Search by name or IP address..."
+            placeholder="按名称或 IP 地址搜索…"
             value={searchQuery}
           />
           {searchQuery && (
             <button
-              aria-label="Clear search"
+              aria-label="清除搜索"
               className={cn(
                 "absolute right-2 top-1/2 -translate-y-1/2",
                 "p-1 rounded-full",
@@ -287,8 +287,8 @@ export default function Page({ loaderData }: Route.ComponentProps) {
         <MachineFilters users={loaderData.users} populatedNodes={loaderData.populatedNodes} />
         <span className="ml-auto text-sm whitespace-nowrap text-mist-500">
           {searchQuery || hasActiveFilters
-            ? `Showing ${filteredAndSortedNodes.length} of ${loaderData.populatedNodes.length} machines`
-            : `${loaderData.populatedNodes.length} machines`}
+            ? `显示 ${filteredAndSortedNodes.length} 台设备，共 ${loaderData.populatedNodes.length} 台`
+            : `${loaderData.populatedNodes.length} 台设备`}
         </span>
       </div>
       <div className="overflow-x-auto">
@@ -306,7 +306,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 className="pb-2 text-xs font-bold uppercase"
               >
                 <button
-                  aria-label="Sort by name"
+                  aria-label="按名称排序"
                   className={cn(
                     "flex items-center gap-x-1 cursor-pointer",
                     "hover:text-mist-900 dark:hover:text-mist-100",
@@ -314,7 +314,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   onClick={() => handleSort("name")}
                   type="button"
                 >
-                  Name
+                  名称
                   {sortField === "name" &&
                     (sortDirection === "asc" ? (
                       <ChevronUp className="h-3 w-3" />
@@ -335,7 +335,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               >
                 <div className="flex items-center gap-x-1">
                   <button
-                    aria-label="Sort by IP address"
+                    aria-label="按 IP 地址排序"
                     className={cn(
                       "flex items-center gap-x-1 cursor-pointer uppercase text-xs font-bold",
                       "hover:text-mist-900 dark:hover:text-mist-100",
@@ -343,7 +343,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                     onClick={() => handleSort("ip")}
                     type="button"
                   >
-                    Addresses
+                    地址
                     {sortField === "ip" &&
                       (sortDirection === "asc" ? (
                         <ChevronUp className="h-3 w-3" />
@@ -355,8 +355,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                     <Tooltip
                       content={
                         <span className="font-normal">
-                          Since MagicDNS is enabled, you can access devices based on their name and
-                          also at{" "}
+                          已启用 MagicDNS，您可以通过设备名称访问设备，也可以使用{" "}
                           <Code>
                             [name].
                             {loaderData.magic}
@@ -382,7 +381,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   className="pb-2 text-xs font-bold uppercase"
                 >
                   <button
-                    aria-label="Sort by version"
+                    aria-label="按版本排序"
                     className={cn(
                       "flex items-center gap-x-1 cursor-pointer",
                       "hover:text-mist-900 dark:hover:text-mist-100",
@@ -390,7 +389,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                     onClick={() => handleSort("version")}
                     type="button"
                   >
-                    Version
+                    版本
                     {sortField === "version" &&
                       (sortDirection === "asc" ? (
                         <ChevronUp className="h-3 w-3" />
@@ -411,7 +410,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 className="pb-2 text-xs font-bold uppercase"
               >
                 <button
-                  aria-label="Sort by last seen"
+                  aria-label="按最后在线时间排序"
                   className={cn(
                     "flex items-center gap-x-1 cursor-pointer",
                     "hover:text-mist-900 dark:hover:text-mist-100",
@@ -419,7 +418,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   onClick={() => handleSort("lastSeen")}
                   type="button"
                 >
-                  Last Seen
+                  最后在线
                   {sortField === "lastSeen" &&
                     (sortDirection === "asc" ? (
                       <ChevronUp className="h-3 w-3" />
@@ -429,7 +428,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 </button>
               </th>
               <th className="w-12 pb-2">
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">操作</span>
               </th>
             </tr>
           </thead>
@@ -445,7 +444,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   className="py-8 text-center text-mist-500"
                   colSpan={loaderData.agent !== undefined ? 6 : 5}
                 >
-                  No machines match the current filters
+                  没有符合当前筛选条件的设备
                 </td>
               </tr>
             ) : (
@@ -480,5 +479,5 @@ export default function Page({ loaderData }: Route.ComponentProps) {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  return <PageError error={error} page="Machines" />;
+  return <PageError error={error} page="设备" />;
 }

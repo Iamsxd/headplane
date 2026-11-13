@@ -1,83 +1,67 @@
-# Headplane
+# 历史记录：Headplane 仅中文版本（已由双语版本替代）
 
-> A feature-complete web UI for [Headscale](https://headscale.net)
+部署于 `https://140.143.127.180/admin/`，基于官方 Headplane 0.8.2，2026-11-13 上线。
+`app/` 是最终中文源文件；`.upstream/app/` 是未修改的上游对照。
+`common.zh-CN.json` 与 `tools/apply-common.cjs` 仅辅助初始翻译，最终版本另有人工修订，不能仅凭运行该工具重建完整翻译。
 
-<picture>
-    <source
-        media="(prefers-color-scheme: dark)"
-        srcset="./docs/assets/preview-dark.png"
-    >
-    <source
-        media="(prefers-color-scheme: light)"
-        srcset="./docs/assets/preview-light.png"
-    >
-    <img
-        alt="Preview"
-        src="./docs/assets/preview-dark.png"
-    >
-</picture>
+## 范围
 
-Headscale is the de-facto self-hosted version of Tailscale, a popular Wireguard
-based VPN service. By default, it does not ship with a web UI, which is where
-Headplane comes in. Headplane is a feature-complete web UI for Headscale, allowing
-you to manage your nodes, networks, and ACLs with ease.
+导航、设备、用户、访问控制、DNS、设置、登录页面、公共组件、弹窗、常用校验和状态提示已翻译，日期与相对时间使用中文。
+产品名称、API/配置/表单键、权限枚举、命令及策略示例保持原样。设备名称、地址和用户数据不翻译。
+Headscale、OIDC、浏览器及第三方库返回的原始诊断信息可能仍为英文。
 
-Headplane aims to replicate the functionality offered by the official Tailscale
-product and dashboard, being one of the most feature complete Headscale UIs available.
-These are some of the features that Headplane offers:
+这是当前版本的本地翻译，不是上游官方语言包。升级上游版本时，应重新对比并迁移翻译，再构建和验证。
+保留上游 MIT 许可证，见 `LICENSE`。
 
-- Machine management, including expiry, network routing, name, and owner management
-- Access Control List (ACL) and tagging configuration for ACL enforcement
-- Support for OpenID Connect (OIDC) as a login provider
-- The ability to edit DNS settings and automatically provision Headscale
-- Configurability for Headscale's settings
+## 来源与构建
 
-## Deployment
+官方源码：`tale/headplane`，版本 0.8.2，源码目录 `tale-headplane-6f0764e`。
+官方运行时固定为：
 
-Refer to the [website](https://headplane.net) for detailed installation instructions.
+```text
+ghcr.io/tale/headplane@sha256:b053a0a6699d0a67be3f0d9bae8e7dbe35ed67ae8448412adcbad7ea49866faa
+```
 
-## Versioning
+服务器完整构建源位于 `/opt/headplane-zh-source`，Node 24.22.1、pnpm 10.4.0 位于 `/opt/headplane-build/bin`。
+依赖安装使用官方源码的冻结 `pnpm-lock.yaml`，未更新依赖版本。pnpm 压缩包按官方 npm 元数据 SHA512 校验。
+WASM 与 wasm_exec.js 复用官方运行时文件；未重新编译 Go 探针。
 
-Headplane uses [semantic versioning](https://semver.org/) for its releases (since v0.6.0).
-Pre-release builds are available under the `next` tag and get updated when a new release
-PR is opened and actively in testing.
+在对应上游源码上覆盖 `app/` 和 `CHANGELOG.md` 后运行：
 
-## Contributing
+```sh
+export PATH=/opt/headplane-build/bin:$PATH
+export HEADPLANE_VERSION=0.8.2
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm run typecheck
+pnpm run lint
+pnpm run build
+```
 
-Headplane is an open-source project and contributions are welcome! If you have
-any suggestions, bug reports, or feature requests, please open an issue. Also
-refer to the [contributor guidelines](./docs/CONTRIBUTING.md) for more info.
+以 `Dockerfile` 和 `build/` 构建派生镜像，只替换应用构建产物，继承官方 Node、启动方式和运行时支持。
+不要将 `/etc/headplane`、API 密钥、Cookie 密钥、登录文件或数据备份加入镜像构建上下文。
 
----
+部署镜像标签：`headplane-local:0.8.2-zh-cn-20261113`。
+实际 systemd 环境固定使用不可变的镜像 ID：
 
-<picture>
-    <source
-        media="(prefers-color-scheme: dark)"
-        srcset="./docs/assets/acls-dark.png"
-    >
-    <source
-        media="(prefers-color-scheme: light)"
-        srcset="./docs/assets/acls-light.png"
-    >
-    <img
-        alt="ACLs"
-        src="./docs/assets/acls-dark.png"
-    >
-</picture>
+```text
+sha256:0cbb92e64044823687842054354bca13922ecc997a413188baaf14382dcd1981
+```
 
-<picture>
-    <source
-        media="(prefers-color-scheme: dark)"
-        srcset="./docs/assets/machine-dark.png"
-    >
-    <source
-        media="(prefers-color-scheme: light)"
-        srcset="./docs/assets/machine-light.png"
-    >
-    <img
-        alt="Machine Management"
-        src="./docs/assets/machine-dark.png"
-    >
-</picture>
+原版镜像与配置保留于服务器。API 密钥轮换通过 systemd 重启 Headplane，继续使用 `/etc/headplane/runtime.env` 中的中文镜像；无需更改轮换脚本。
 
-> Copyright (c) 2025 Aarnav Tale
+## 验证与恢复
+
+完整结果见 `../../artifacts/tencent-headscale/headplane-zh-release-20261113.md`。
+临时候选环境使用独立 SQLite 快照和 loopback 3001；已验证后移除候选容器及本机预览代理/SSH 隧道。
+预览代理只允许 GET，不提交任何生产写入。
+
+恢复原版时，在服务器以 root 执行：
+
+```sh
+cp /root/headplane-zh-setup-20261113/before-zh-deploy.env /etc/headplane/runtime.env
+systemctl restart headplane
+curl --fail http://127.0.0.1:3000/admin/healthz
+```
+
+翻译不涉及数据库结构，无需回滚设备数据。仅在数据本身损坏时才按原备份恢复流程处理数据库。
+`tools/deploy.py` 为本次部署脚本，拒绝覆盖既有回滚点；未来发布需使用新的独立暂存目录。

@@ -16,19 +16,17 @@ export default function DeleteUser({ user, machines, isOpen, setIsOpen }: Delete
   return (
     <Dialog isOpen={isOpen} onOpenChange={setIsOpen}>
       <DialogPanel variant={machines.length > 0 ? "unactionable" : "normal"}>
-        <Title>Delete {name}?</Title>
+        <Title>删除 {name}？</Title>
         {machines.length > 0 ? (
           <Text className="mb-6">
-            Users cannot be deleted if they have machines. Please delete or re-assign their machines
-            to other users before proceeding.
+            无法删除仍拥有设备的用户。请先删除其设备，或将设备重新分配给其他用户。
           </Text>
         ) : (
           <Text className="mb-6">
-            Deleted users cannot be recovered.
+            删除用户后无法恢复。
             {user.provider === "oidc" && (
               <p className="mt-4 text-sm text-mist-600 dark:text-mist-300">
-                Since this user is authenticated via an external provider, they will be recreated if
-                they sign in again.
+                此用户通过外部提供方进行身份验证，再次登录时会重新创建。
               </p>
             )}
           </Text>

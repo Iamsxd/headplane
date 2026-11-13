@@ -23,7 +23,7 @@ export async function aclLoader({ request, context }: Route.LoaderArgs) {
   const principal = await auth.require(request);
   const check = auth.can(principal, Capabilities.read_policy);
   if (!check) {
-    throw data("You do not have permission to read the ACL policy.", {
+    throw data("您无权读取 ACL 策略。", {
       status: 403,
     });
   }

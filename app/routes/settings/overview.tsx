@@ -19,59 +19,52 @@ export default function Page({ loaderData: { config, hasOidcConfig } }: Route.Co
   return (
     <div className="flex max-w-(--breakpoint-lg) flex-col gap-8">
       <div className="flex w-full flex-col sm:w-2/3">
-        <h1 className="mb-4 text-2xl font-medium">Settings</h1>
+        <h1 className="mb-4 text-2xl font-medium">设置</h1>
         <p>
-          The settings page is still under construction. As I'm able to add more features, I'll be
-          adding them here. If you require any features, feel free to open an issue on the GitHub
-          repository.
+          设置页面仍在完善中，后续功能将陆续添加到此处。如需其他功能，欢迎在 GitHub 仓库提交 issue。
         </p>
       </div>
       <div className="flex w-full flex-col sm:w-2/3">
-        <h1 className="mb-4 text-2xl font-medium">Pre-Auth Keys</h1>
+        <h1 className="mb-4 text-2xl font-medium">预认证密钥</h1>
         <p>
-          Headscale fully supports pre-authentication keys in order to easily add devices to your
-          Tailnet. To learn more about using pre-authentication keys, visit the{" "}
+          Headscale 完整支持预认证密钥，方便您将设备加入 Tailnet。有关预认证密钥的使用方法，请参阅{" "}
           <Link external styled to="https://tailscale.com/kb/1085/auth-keys/">
-            Tailscale documentation
+            Tailscale 文档
           </Link>
         </p>
       </div>
       <Link to="/settings/auth-keys">
         <div className="flex items-center text-lg font-medium">
-          Manage Auth Keys
+          管理认证密钥
           <ArrowRight className="ml-2 h-5 w-5" />
         </div>
       </Link>
       <div className="flex w-full flex-col sm:w-2/3">
         <h1 className="mb-4 text-2xl font-medium">Headplane Agent</h1>
         <p>
-          The Headplane Agent syncs node information like OS version and connectivity details from
-          your Tailnet.
+          Headplane Agent 会同步 Tailnet 中节点的操作系统版本、连接详情等信息。
         </p>
       </div>
       <Link to="/settings/agent">
         <div className="flex items-center text-lg font-medium">
-          Agent Settings
+          Agent 设置
           <ArrowRight className="ml-2 h-5 w-5" />
         </div>
       </Link>
       {config && hasOidcConfig ? (
         <>
           <div className="flex w-full flex-col sm:w-2/3">
-            <h1 className="mb-4 text-2xl font-medium">Authentication Restrictions</h1>
+            <h1 className="mb-4 text-2xl font-medium">身份验证限制</h1>
             <p>
-              Headscale supports restricting OIDC authentication to only allow certain email
-              domains, groups, or users to authenticate. This can be used to limit access to your
-              Tailnet to only certain users or groups and Headplane will also respect these settings
-              when authenticating.{" "}
+              Headscale 支持限制 OIDC 身份验证，仅允许指定邮箱域名、组或用户登录。您可以借此限定能够访问 Tailnet 的用户或组，Headplane 在验证身份时也会遵循这些设置。{" "}
               <Link external styled to="https://headscale.net/stable/ref/oidc/#basic-configuration">
-                Learn More
+                了解更多
               </Link>
             </p>
           </div>
           <Link to="/settings/restrictions">
             <div className="flex items-center text-lg font-medium">
-              Manage Restrictions
+              管理限制
               <ArrowRight className="ml-2 h-5 w-5" />
             </div>
           </Link>
@@ -82,5 +75,5 @@ export default function Page({ loaderData: { config, hasOidcConfig } }: Route.Co
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  return <PageError error={error} page="Settings" />;
+  return <PageError error={error} page="设置" />;
 }

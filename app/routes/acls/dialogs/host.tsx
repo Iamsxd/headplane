@@ -47,25 +47,25 @@ export default function HostDialog({
           setIsOpen(false);
         }}
       >
-        <Title>{name ? `Edit host ${name}` : "New host"}</Title>
+        <Title>{name ? `编辑主机 ${name}` : "新建主机"}</Title>
         <Text>
-          Hosts give a name to an IP address or CIDR range so it can be referenced from rules.
+          主机条目为 IP 地址或 CIDR 网段命名，以便在规则中引用。
         </Text>
         <Input
           errorMessage={
             isDuplicate
-              ? "A host with this name already exists."
-              : "Host names may only contain lowercase letters, numbers and dashes."
+              ? "同名主机已存在。"
+              : "主机名只能包含小写字母、数字和连字符。"
           }
           invalid={nameIsInvalid}
-          label="Name"
+          label="名称"
           onChange={setDraftName}
           placeholder="office"
           value={draftName}
         />
         <Input
           invalid={draftValue.length > 0 && valueIsInvalid}
-          label="Address"
+          label="地址"
           onChange={setDraftValue}
           placeholder="100.64.0.0/24"
           value={draftValue}

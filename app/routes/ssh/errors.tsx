@@ -5,33 +5,33 @@ import Link from "~/components/link";
 
 export const sshErrors = {
   wasm_missing: {
-    title: "Browser SSH is not available",
-    message: "This version of Headplane was not built with browser SSH support.",
+    title: "浏览器 SSH 不可用",
+    message: "此 Headplane 构建未包含浏览器 SSH 支持。",
     anchor: "#ssh-not-available",
   },
 
   agent_required: {
-    title: "Browser SSH requires the Headplane agent",
-    message: "Browser SSH is only available when the Headplane agent integration is enabled.",
+    title: "浏览器 SSH 需要 Headplane 探针",
+    message: "启用 Headplane 探针集成后，才能使用浏览器 SSH。",
     anchor: "#agent-required",
   },
 
   oidc_required: {
-    title: "Browser SSH requires OIDC authentication",
-    message: "Browser SSH is only available when OIDC authentication is enabled.",
+    title: "浏览器 SSH 需要 OIDC 认证",
+    message: "启用 OIDC 认证后，才能使用浏览器 SSH。",
     anchor: "#oidc-required",
   },
 
   node_not_found: (hostname: string) => ({
-    title: "Node not found",
-    message: `No node found with hostname ${hostname}.`,
+    title: "未找到设备",
+    message: `未找到主机名为 ${hostname} 的设备。`,
     anchor: "#node-not-found",
   }),
 
   user_not_linked: {
-    title: "User account not linked",
+    title: "用户账号尚未关联",
     message:
-      "You'll need to link your user account to a Headscale user before you can use Browser SSH.",
+      "使用浏览器 SSH 前，需要将账号关联到 Headscale 用户。",
     anchor: "#user-not-linked",
   },
 } as const;
@@ -69,7 +69,7 @@ export function SSHErrorBoundary({ title, message, anchor }: SSHErrorBoundaryPro
         <br />
         <br />
         <Link to={`${DOCS_BASE}${anchor}`} external styled>
-          Headplane SSH Documentation
+          Headplane SSH 文档
         </Link>{" "}
       </Card.Text>
     </Card>

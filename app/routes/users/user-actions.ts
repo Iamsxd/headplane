@@ -19,7 +19,7 @@ export async function userAction({ request, context }: Route.ActionArgs) {
   const principal = await auth.require(request);
   const check = await auth.can(principal, Capabilities.write_users);
   if (!check) {
-    throw data("You do not have permission to update users", {
+    throw data("您无权修改用户", {
       status: 403,
     });
   }
@@ -27,7 +27,7 @@ export async function userAction({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const action = formData.get("action_id")?.toString();
   if (!action) {
-    throw data("Missing `action_id` in the form data.", {
+    throw data("表单数据缺少 `action_id`。", {
       status: 404,
     });
   }
@@ -40,7 +40,7 @@ export async function userAction({ request, context }: Route.ActionArgs) {
       const email = formData.get("email")?.toString();
 
       if (!name) {
-        throw data("Missing `username` in the form data.", {
+        throw data("表单数据缺少 `username`。", {
           status: 400,
         });
       }
@@ -52,12 +52,12 @@ export async function userAction({ request, context }: Route.ActionArgs) {
 
       await api.users.create({ name, email, displayName });
       await headscaleLiveStore.refresh(usersResource, api);
-      return { message: "User created successfully" };
+      return { message: "用户创建成功" };
     }
     case "delete_user": {
       const headscaleUserId = formData.get("headscale_user_id")?.toString();
       if (!headscaleUserId) {
-        throw data("Missing `headscale_user_id` in the form data.", {
+        throw data("表单数据缺少 `headscale_user_id`。", {
           status: 400,
         });
       }
@@ -70,7 +70,7 @@ export async function userAction({ request, context }: Route.ActionArgs) {
       }
 
       await headscaleLiveStore.refresh(usersResource, api);
-      return { message: "User deleted successfully" };
+      return { message: "用户删除成功" };
     }
     case "rename_user": {
       const headscaleUserId = formData.get("headscale_user_id")?.toString();
@@ -87,78 +87,78 @@ export async function userAction({ request, context }: Route.ActionArgs) {
       const users = await api.users.list({ id: headscaleUserId });
       const user = users.find((user) => user.id === headscaleUserId);
       if (!user) {
-        throw data(`No user found with id: ${headscaleUserId}`, { status: 400 });
+        throw data(`未找到 ID 为 ${headscaleUserId} 的用户`, { status: 400 });
       }
 
       if (user.provider === "oidc") {
         // OIDC users cannot be renamed via this endpoint, return an error
-        throw data("Users managed by OIDC cannot be renamed", {
+        throw data("无法重命名由 OIDC 管理的用户", {
           status: 403,
         });
       }
 
       await api.users.rename(headscaleUserId, newName);
       await headscaleLiveStore.refresh(usersResource, api);
-      return { message: "User renamed successfully" };
+      return { message: "用户重命名成功" };
     }
     case "reassign_user": {
       const headplaneUserId = formData.get("headplane_user_id")?.toString();
       const newRole = formData.get("new_role")?.toString();
       if (!headplaneUserId || !newRole) {
-        throw data("Missing `headplane_user_id` or `new_role` in the form data.", {
+        throw data("表单数据缺少 `headplane_user_id` 或 `new_role`。", {
           status: 400,
         });
       }
 
       const result = await auth.reassignUser(headplaneUserId, newRole as Role);
       if (!result) {
-        throw data("Failed to reassign user role.", { status: 500 });
+        throw data("更改用户角色失败。", { status: 500 });
       }
 
-      return { message: "User reassigned successfully" };
+      return { message: "用户角色更改成功" };
     }
     case "transfer_ownership": {
       if (!isUserPrincipal(principal) || principal.user.role !== "owner") {
-        throw data("Only the owner can transfer ownership.", { status: 403 });
+        throw data("只有所有者可以转移所有权。", { status: 403 });
       }
 
       const headplaneUserId = formData.get("headplane_user_id")?.toString();
       if (!headplaneUserId) {
-        throw data("Missing `headplane_user_id` in the form data.", { status: 400 });
+        throw data("表单数据缺少 `headplane_user_id`。", { status: 400 });
       }
 
       const result = await auth.transferOwnership(principal.user.id, headplaneUserId);
       if (!result) {
-        throw data("Failed to transfer ownership.", { status: 500 });
+        throw data("转移所有权失败。", { status: 500 });
       }
 
-      return { message: "Ownership transferred successfully" };
+      return { message: "所有权转移成功" };
     }
     case "link_user": {
       const headplaneUserId = formData.get("headplane_user_id")?.toString();
       const headscaleUserId = formData.get("headscale_user_id")?.toString();
       if (!headplaneUserId || !headscaleUserId) {
-        throw data("Missing `headplane_user_id` or `headscale_user_id` in the form data.", {
+        throw data("表单数据缺少 `headplane_user_id` 或 `headscale_user_id`。", {
           status: 400,
         });
       }
 
       const linked = await auth.linkHeadscaleUser(headplaneUserId, headscaleUserId);
       if (!linked) {
-        throw data("That Headscale user is already linked to another account.", { status: 409 });
+        throw data("该 Headscale 用户已关联其他账户。", { status: 409 });
       }
 
-      return { message: "Headscale user linked successfully" };
+      return { message: "Headscale 用户关联成功" };
     }
     case "update_user_groups": {
       // Group membership lives in the policy, so `write_policy` is needed too.
       if (!auth.can(principal, Capabilities.write_policy)) {
-        throw data("You do not have permission to write to the ACL policy", { status: 403 });
+        throw data("您无权修改 ACL 策略", { status: 403 });
       }
 
       const userName = formData.get("user_name")?.toString();
       if (!userName) {
-        throw data("Missing `user_name` in the form data.", { status: 400 });
+        throw data("表单数据缺少 `user_name`。", { status: 400 });
       }
 
       const groups = (formData.get("groups")?.toString() ?? "")
@@ -168,13 +168,13 @@ export async function userAction({ request, context }: Route.ActionArgs) {
 
       const invalid = groups.filter((group) => !isValidGroupName(group));
       if (invalid.length > 0) {
-        return data({ error: `Invalid group name: ${invalid.join(", ")}` }, 400);
+        return data({ error: `无效的组名：${invalid.join(", ")}` }, 400);
       }
 
       const { policy } = await api.policy.get();
       const parsed = parsePolicy(policy);
       if (!parsed.ok) {
-        return data({ error: `The ACL policy could not be parsed: ${parsed.error}` }, 400);
+        return data({ error: `无法解析 ACL 策略：${parsed.error}` }, 400);
       }
 
       try {
@@ -187,19 +187,19 @@ export async function userAction({ request, context }: Route.ActionArgs) {
           return data(
             {
               error:
-                "The ACL policy is read-only. Set `policy.mode` to `database` in your Headscale configuration to edit groups.",
+                "ACL 策略为只读。请在 Headscale 配置中将 `policy.mode` 设置为 `database`，以便编辑组。",
             },
             403,
           );
         }
 
-        return data({ error: `Could not update the ACL policy: ${message}` }, 500);
+        return data({ error: `无法更新 ACL 策略：${message}` }, 500);
       }
 
-      return { message: "Groups updated successfully" };
+      return { message: "组更新成功" };
     }
     default:
-      throw data("Invalid `action_id` provided.", {
+      throw data("提供的 `action_id` 无效。", {
         status: 400,
       });
   }

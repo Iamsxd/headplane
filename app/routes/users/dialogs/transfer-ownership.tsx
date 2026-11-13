@@ -19,14 +19,12 @@ export default function TransferOwnership({
   return (
     <Dialog isOpen={isOpen} onOpenChange={setIsOpen}>
       <DialogPanel variant="destructive">
-        <Title>Transfer ownership to {targetDisplayName}?</Title>
+        <Title>将所有权转移给 {targetDisplayName}？</Title>
         <Text className="mb-6">
-          This will make {targetDisplayName} the new owner of this Headplane instance. You will be
-          demoted to an Admin. This action cannot be easily undone.
+          {targetDisplayName} 将成为此 Headplane 实例的新所有者，您的角色将降为管理员。此操作难以撤销。
         </Text>
         <Notice variant="warning">
-          Only the owner can transfer ownership. After this, you will no longer be able to manage
-          ownership.
+          只有所有者可以转移所有权。转移后，您将无法再管理所有权。
         </Notice>
         <input name="action_id" type="hidden" value="transfer_ownership" />
         <input name="headplane_user_id" type="hidden" value={targetHeadplaneUserId} />

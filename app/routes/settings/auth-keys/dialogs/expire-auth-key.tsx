@@ -12,16 +12,15 @@ interface ExpireAuthKeyProps {
 export default function ExpireAuthKey({ authKey, user }: ExpireAuthKeyProps) {
   return (
     <Dialog>
-      <Button variant="heavy">Expire Key</Button>
+      <Button variant="heavy">使密钥失效</Button>
       <DialogPanel variant="destructive">
-        <Title>Expire auth key?</Title>
+        <Title>使认证密钥失效？</Title>
         <input name="action_id" type="hidden" value="expire_preauthkey" />
         <input name="user_id" type="hidden" value={user.id} />
         <input name="key_id" type="hidden" value={authKey.id} />
         <input name="key" type="hidden" value={authKey.key} />
         <Text>
-          Expiring this authentication key will immediately prevent it from being used to
-          authenticate new devices. This action cannot be undone.
+          此认证密钥失效后，将立即无法用于验证新设备。此操作无法撤销。
         </Text>
       </DialogPanel>
     </Dialog>

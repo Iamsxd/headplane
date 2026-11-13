@@ -32,6 +32,14 @@ function schemaKeys(schema: Type): string[] {
   return props?.map((p) => p.key) ?? [];
 }
 
+// Translate schema messages for display without changing schema rules or field keys.
+function validationMessage(message: string): string {
+  if (message === "must be non-empty") return "此项不能为空。";
+  if (message.includes("must be an IP address")) return "请输入有效的 IP 地址。";
+  if (message.includes('must be "A" or "AAAA"')) return "请选择 A 或 AAAA 记录类型。";
+  return message;
+}
+
 export function useForm<T extends Record<string, unknown>>(options: UseFormOptions<T>) {
   const { schema, actionData, validate } = options;
   const keys = schemaKeys(schema);
@@ -85,7 +93,7 @@ export function useForm<T extends Record<string, unknown>>(options: UseFormOptio
     if (result instanceof type.errors) {
       const fieldProblems = result.flatProblemsByPath[name];
       if (fieldProblems) {
-        errors[name] = fieldProblems[0];
+        errors[name] = validationMessage(fieldProblems[0]);
       }
     }
 
@@ -172,7 +180,7 @@ export async function validateFormData<T extends Record<string, unknown>>(
   if (result instanceof type.errors) {
     const errors: Record<string, string> = {};
     for (const [path, problems] of Object.entries(result.flatProblemsByPath)) {
-      errors[path] = problems[0];
+      errors[path] = validationMessage(problems[0]);
     }
     return { success: false, errors };
   }

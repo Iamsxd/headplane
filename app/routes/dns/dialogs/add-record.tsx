@@ -31,8 +31,8 @@ export default function AddRecord({ records }: Props) {
       const lookup = records.find((r) => r.name === name);
       if (lookup?.value === ip) {
         return {
-          record_name: "This record already exists.",
-          record_value: "This record already exists.",
+          record_name: "此记录已存在。",
+          record_value: "此记录已存在。",
         };
       }
 
@@ -43,20 +43,20 @@ export default function AddRecord({ records }: Props) {
   const ip = form.values.record_value as string;
   const recordType = form.values.record_type as string;
   const isDuplicate =
-    !!form.errors.record_name?.includes("already exists") &&
-    !!form.errors.record_value?.includes("already exists");
+    !!form.errors.record_name?.includes("已存在") &&
+    !!form.errors.record_value?.includes("已存在");
 
   return (
     <Dialog>
-      <Button>Add DNS record</Button>
+      <Button>添加 DNS 记录</Button>
       <DialogPanel onSubmit={() => form.reset()}>
-        <Title>Add DNS record</Title>
-        <Text>Enter the domain and IP address for the new DNS record.</Text>
+        <Title>添加 DNS 记录</Title>
+        <Text>输入新 DNS 记录的域名和 IP 地址。</Text>
         <div className="mt-4 flex flex-col gap-2">
           <input type="hidden" name="action_id" value="add_record" />
           <Select
             required
-            label="Record Type"
+            label="记录类型"
             name="record_type"
             defaultValue={recordType}
             onValueChange={(v) => {
@@ -70,19 +70,18 @@ export default function AddRecord({ records }: Props) {
           <Input
             {...form.field("record_name")}
             required
-            label="Domain"
+            label="域名"
             placeholder="test.example.com"
           />
           <Input
             {...form.field("record_value")}
             required
-            label="IP Address"
+            label="IP 地址"
             placeholder={recordType === "AAAA" ? "2001:db8::ff00:42:8329" : "101.101.101.101"}
           />
           {isDuplicate ? (
             <p className="text-sm opacity-50">
-              A record with the domain name <Code>{name}</Code> and IP address <Code>{ip}</Code>{" "}
-              already exists.
+              域名为 <Code>{name}</Code>、IP 地址为 <Code>{ip}</Code> 的记录已存在。
             </p>
           ) : undefined}
         </div>

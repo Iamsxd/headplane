@@ -154,14 +154,14 @@ export default function Page({ loaderData }: Route.ComponentProps) {
         <div className="flex h-screen w-screen items-center justify-center bg-black">
           <Card className="w-screen" variant="flat">
             <div className="flex items-center justify-between gap-4">
-              <Card.Title>Node Offline</Card.Title>
+              <Card.Title>设备离线</Card.Title>
               <WifiOff className="mb-2 h-6 w-6 text-red-500" />
             </div>
             <Card.Text>
-              <Code>{hostname}</Code> is not currently connected to the Tailnet.
+              <Code>{hostname}</Code> 当前未连接到组网网络。
             </Card.Text>
             <Button className="mt-8 w-full" onClick={() => window.location.reload()}>
-              Retry Connection
+              重新连接
             </Button>
           </Card>
         </div>
@@ -197,11 +197,10 @@ function BrowserSSHCompatibilityBanner({
     <div className="fixed inset-x-4 top-4 z-[60] mx-auto max-w-2xl">
       <StatusBanner
         variant="warning"
-        title={`Browser SSH is broken on Headscale ${warning.version}`}
+        title={`Headscale ${warning.version} 无法使用浏览器 SSH`}
       >
-        Headscale 0.29 beta releases through 0.29.1 reject Tailscale's browser/WASM{" "}
-        <Code>/ts2021</Code> WebSocket request with <Code>405 Method Not Allowed</Code>. Upgrade
-        Headscale to 0.29.2 or newer, or use Headscale 0.28.x.
+        Headscale 0.29 测试版至 0.29.1 会拒绝 Tailscale 浏览器/WASM 的{" "}
+        <Code>/ts2021</Code> WebSocket 请求并返回 <Code>405 Method Not Allowed</Code>。请将 Headscale 升级至 0.29.2 或更新版本，或使用 0.28.x。
       </StatusBanner>
     </div>
   );
@@ -218,7 +217,7 @@ function SSHConsole({
 }) {
   const [ipn, setIpn] = useState<IPN | null>(null);
   const [connected, setConnected] = useState(false);
-  const [status, setStatus] = useState("Joining Tailnet…");
+  const [status, setStatus] = useState("正在加入组网网络…");
 
   useEffect(() => {
     let cancelled = false;
@@ -228,17 +227,17 @@ function SSHConsole({
       authKey: node.preAuthKey,
       hostname: node.ephemeralHostname,
       onPanic: (error) => {
-        if (!cancelled) setStatus(`Tailnet node stopped: ${error}`);
+        if (!cancelled) setStatus(`组网节点已停止：${error}`);
       },
     }).then(
       (instance) => {
         if (cancelled) return;
-        setStatus(`Connecting to ${hostname}…`);
+        setStatus(`正在连接 ${hostname}…`);
         setIpn(instance);
       },
       (error: unknown) => {
         if (cancelled) return;
-        setStatus(`Failed to join Tailnet: ${error instanceof Error ? error.message : error}`);
+        setStatus(`加入组网网络失败：${error instanceof Error ? error.message : error}`);
       },
     );
 

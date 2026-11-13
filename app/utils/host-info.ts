@@ -3,7 +3,7 @@ import type { HostInfo } from "~/types";
 export function getTSVersion(host: HostInfo) {
   const { IPNVersion } = host;
   if (!IPNVersion) {
-    return "Unknown";
+    return "未知";
   }
 
   // IPNVersion is <Semver>-<something>-<something>
@@ -29,7 +29,7 @@ function formatOS(os?: string) {
     case "linux":
       return "Linux";
     case undefined:
-      return "Unknown";
+      return "未知";
     default:
       return os;
   }

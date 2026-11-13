@@ -80,13 +80,13 @@ export default function Tags({ machine, isOpen, setIsOpen, existingTags, policyT
         }}
         isDisabled={fetcher.state !== "idle"}
       >
-        <Title>Edit ACL tags for {machine.givenName}</Title>
+        <Title>编辑 {machine.givenName} 的 ACL 标签</Title>
         <Text>
-          ACL tags can be used to reference machines in your ACL policies. See the{" "}
+          ACL 标签可用于在 ACL 策略中引用设备。请参阅{" "}
           <Link external styled to="https://tailscale.com/kb/1068/acl-tags">
-            Tailscale documentation
+            Tailscale 文档
           </Link>{" "}
-          for more information.
+          了解更多信息。
         </Text>
         {error ? (
           <p className="mt-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
@@ -97,7 +97,7 @@ export default function Tags({ machine, isOpen, setIsOpen, existingTags, policyT
           {tags.length === 0 ? (
             <TableList.Item className="flex flex-col items-center gap-2.5 py-4 opacity-70">
               <TagsIcon />
-              <p className="font-semibold">No tags are set on this machine</p>
+              <p className="font-semibold">此设备尚未设置标签</p>
             </TableList.Item>
           ) : (
             tags.map((item) => (
@@ -124,13 +124,13 @@ export default function Tags({ machine, isOpen, setIsOpen, existingTags, policyT
 
         <div className="mt-2 flex items-center gap-2">
           <Input
-            aria-label="Add a tag"
+            aria-label="添加标签"
             className="w-full"
             value={tag}
             onChange={setTag}
             invalid={tag.length > 0 && tagIsInvalid}
             placeholder="tag:example"
-            label="Tag"
+            label="标签"
             labelHidden
           />
           <Button
@@ -162,19 +162,18 @@ export default function Tags({ machine, isOpen, setIsOpen, existingTags, policyT
         ) : null}
         {undeclaredTags.length > 0 ? (
           <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
-            {undeclaredTags.join(", ")} {undeclaredTags.length === 1 ? "is" : "are"} not declared
-            under <code className="font-mono">tagOwners</code> in your policy, so no rule will match{" "}
-            {undeclaredTags.length === 1 ? "it" : "them"}. Declare{" "}
-            {undeclaredTags.length === 1 ? "it" : "them"} in{" "}
+            {undeclaredTags.join(", ")} {undeclaredTags.length === 1 ? "未" : "均未"}在策略的
+            <code className="font-mono">tagOwners</code> 中声明，因此没有规则会匹配{" "}
+            {undeclaredTags.length === 1 ? "该标签" : "这些标签"}。请将{" "}
+            {undeclaredTags.length === 1 ? "该标签" : "这些标签"}添加到{" "}
             <Link styled to="/acls">
-              Access Control
+              访问控制
             </Link>
-            .
+            中。
           </p>
         ) : null}
         <p className="mt-2 text-sm opacity-50">
-          Not seeing the tags you expect? Tags need to be defined in your access control policy
-          before they can be assigned to machines.
+          找不到需要的标签？请先在访问控制策略中定义标签，然后再将其分配给设备。
         </p>
       </DialogPanel>
     </Dialog>

@@ -19,7 +19,7 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
 
   const action = formData.get("action_id")?.toString();
   if (!action) {
-    throw data("Missing `action_id` in the form data.", {
+    throw data("表单数据中缺少 `action_id`。", {
       status: 400,
     });
   }
@@ -27,28 +27,28 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
   // Fast track register since it doesn't require an existing machine
   if (action === "register") {
     if (!auth.can(principal, Capabilities.write_machines)) {
-      throw data("You do not have permission to manage machines", {
+      throw data("您没有权限管理设备", {
         status: 403,
       });
     }
 
     const registrationKeyInput = formData.get("register_key")?.toString();
     if (!registrationKeyInput) {
-      throw data("Missing `register_key` in the form data.", {
+      throw data("表单数据中缺少 `register_key`。", {
         status: 400,
       });
     }
 
     const registrationKey = normalizeRegistrationKey(registrationKeyInput);
     if (!registrationKey) {
-      throw data("Invalid `register_key` in the form data.", {
+      throw data("表单数据中的 `register_key` 无效。", {
         status: 400,
       });
     }
 
     const user = formData.get("user")?.toString();
     if (!user) {
-      throw data("Missing `user` in the form data.", {
+      throw data("表单数据中缺少 `user`。", {
         status: 400,
       });
     }
@@ -61,20 +61,20 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
   // Check if the user has permission to manage this machine
   const nodeId = formData.get("node_id")?.toString();
   if (!nodeId) {
-    throw data("Missing `node_id` in the form data.", {
+    throw data("表单数据中缺少 `node_id`。", {
       status: 400,
     });
   }
 
   const node = await api.nodes.get(nodeId);
   if (!node) {
-    throw data(`Machine with ID ${nodeId} not found`, {
+    throw data(`找不到 ID 为 ${nodeId} 的设备`, {
       status: 404,
     });
   }
 
   if (!auth.canManageNode(principal, node)) {
-    throw data("You do not have permission to act on this machine", {
+    throw data("您没有权限操作此设备", {
       status: 403,
     });
   }
@@ -83,7 +83,7 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
     case "rename": {
       const newName = formData.get("name")?.toString();
       if (!newName) {
-        throw data("Missing `name` in the form data.", {
+        throw data("表单数据中缺少 `name`。", {
           status: 400,
         });
       }
@@ -91,14 +91,14 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
       const name = String(formData.get("name"));
       if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/.test(name.toLowerCase())) {
         throw data(
-          "Machine names must be valid DNS labels: lowercase letters, numbers, and hyphens only, and must start and end with a letter or number.",
+          "设备名称必须是有效的 DNS 名称：仅允许小写字母、数字和连字符，且必须以字母或数字开头和结尾。",
           { status: 400 },
         );
       }
 
       await api.nodes.rename(nodeId, name);
       await headscaleLiveStore.refresh(nodesResource, api);
-      return { message: "Machine renamed" };
+      return { message: "设备已重命名" };
     }
 
     case "delete": {
@@ -110,20 +110,20 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
     case "expire": {
       await api.nodes.expire(nodeId);
       await headscaleLiveStore.refresh(nodesResource, api);
-      return { message: "Machine expired" };
+      return { message: "设备已过期" };
     }
 
     case "toggle_expiry": {
       const disableExpiry = String(formData.get("disableExpiry")) === "true";
       await api.nodes.toggleExpiry(nodeId, disableExpiry);
       await headscaleLiveStore.refresh(nodesResource, api);
-      return { message: "Machine expired" };
+      return { message: "设备已过期" };
     }
 
     case "update_tags": {
       const tags = formData.get("tags")?.toString().split(",") ?? [];
       if (tags.length === 0) {
-        throw data("Missing `tags` in the form data.", {
+        throw data("表单数据中缺少 `tags`。", {
           status: 400,
         });
       }
@@ -135,7 +135,7 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
         );
 
         await headscaleLiveStore.refresh(nodesResource, api);
-        return { success: true as const, message: "Tags updated" };
+        return { success: true as const, message: "标签已更新" };
       } catch (error) {
         if (isDataWithApiError(error) && error.data.statusCode === 400) {
           return data(
@@ -143,7 +143,7 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
               success: false as const,
               error:
                 extractApiErrorMessage(error.data) ??
-                "One or more tags are not defined in your ACL policy. Please add them to your policy before assigning them to a machine.",
+                "您的 ACL 策略中尚未定义一个或多个标签。请先将这些标签添加到策略中，再将其分配给设备。",
             },
             { status: 400 },
           );
@@ -157,21 +157,21 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
       const newApproved = node.approvedRoutes;
       const routes = formData.get("routes")?.toString();
       if (!routes) {
-        throw data("Missing `routes` in the form data.", {
+        throw data("表单数据中缺少 `routes`。", {
           status: 400,
         });
       }
 
       const allRoutes = routes.split(",").map((route) => route.trim());
       if (allRoutes.length === 0) {
-        throw data("No routes provided to update", {
+        throw data("未提供要更新的路由", {
           status: 400,
         });
       }
 
       const enabled = formData.get("enabled")?.toString();
       if (enabled === undefined) {
-        throw data("Missing `enabled` in the form data.", {
+        throw data("表单数据中缺少 `enabled`。", {
           status: 400,
         });
       }
@@ -201,29 +201,29 @@ export async function machineAction({ request, context }: Route.ActionArgs) {
 
       await api.nodes.approveRoutes(nodeId, newApproved);
       await headscaleLiveStore.refresh(nodesResource, api);
-      return { message: "Routes updated" };
+      return { message: "路由已更新" };
     }
 
     case "reassign": {
       const user = formData.get("user_id")?.toString();
       if (!user) {
-        throw data("Missing `user_id` in the form data.", {
+        throw data("表单数据中缺少 `user_id`。", {
           status: 400,
         });
       }
 
       if (!api.nodes.reassignUser) {
-        throw data("Reassigning a node owner is no longer supported on this Headscale version.", {
+        throw data("此 Headscale 版本不再支持更改节点所有者。", {
           status: 400,
         });
       }
       await api.nodes.reassignUser(nodeId, user);
       await headscaleLiveStore.refresh(nodesResource, api);
-      return { message: "Machine reassigned" };
+      return { message: "设备所有者已更改" };
     }
 
     default:
-      throw data("Invalid action", {
+      throw data("无效的操作", {
         status: 400,
       });
   }

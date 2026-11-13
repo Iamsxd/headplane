@@ -1,5 +1,9 @@
 # Next
 
+## Changes
+
+- This local build displays the dashboard, device management, users, DNS, access policies, settings and common validation messages in Simplified Chinese, with Chinese dates and relative times.
+
 # 0.8.2 (October 22, 2026)
 
 This release contains an important security update for Headplane that protects against the [compromised eMudhra intermediate CAs](https://emudhra.com/en/post/certificate-security-incident) with Node.js 24.22.1 and Go 1.27.3. Any native installations should also upgrade to these versions and rebuild the agent.

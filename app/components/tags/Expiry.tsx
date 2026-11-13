@@ -7,7 +7,7 @@ export interface ExpiryTagProps {
 }
 
 export function ExpiryTag({ variant, expiry }: ExpiryTagProps) {
-  const formatter = new Intl.DateTimeFormat("en-US", {
+  const formatter = new Intl.DateTimeFormat("zh-CN", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -18,17 +18,16 @@ export function ExpiryTag({ variant, expiry }: ExpiryTagProps) {
       content={
         variant === "expired" ? (
           <>
-            This machine is expired and will not be able to connect to the network. Re-authenticate
-            with Tailscale on the machine to re-enable it.
+            此设备已过期，无法连接网络。请在设备的 Tailscale 客户端中重新认证以恢复连接。
           </>
         ) : (
-          <>This machine has key expiry disabled and will never need to re-authenticate.</>
+          <>此设备已关闭密钥到期，无需因密钥过期而重新认证。</>
         )
       }
     >
       <Chip
         text={
-          variant === "expired" ? `Expired ${formatter.format(new Date(expiry!))}` : "No expiry"
+          variant === "expired" ? `已于 ${formatter.format(new Date(expiry!))} 过期` : "永不过期"
         }
         className="bg-mist-200 text-mist-800 dark:bg-mist-800 dark:text-mist-200"
       />

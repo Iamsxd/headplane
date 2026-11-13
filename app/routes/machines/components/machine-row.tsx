@@ -68,7 +68,7 @@ export default function MachineRow({
             {node.givenName}
           </p>
           <p className="text-sm opacity-50">
-            {node.user ? getUserDisplayName(node.user) : "Tag-owned"}
+            {node.user ? getUserDisplayName(node.user) : "由标签管理"}
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1">
             {mapTagsToComponents(node, uiTags)}
@@ -93,8 +93,8 @@ export default function MachineRow({
                     const isCopied = await copyToClipboard(ip);
                     toast(
                       isCopied
-                        ? "Copied IP address to clipboard"
-                        : "Copy failed. Please copy the address manually.",
+                        ? "已将 IP 地址复制到剪贴板"
+                        : "复制失败，请手动复制地址。",
                     );
                   }}
                 >
@@ -121,7 +121,7 @@ export default function MachineRow({
               </p>
             </>
           ) : (
-            <p className="text-sm opacity-50">Unknown</p>
+            <p className="text-sm opacity-50">未知</p>
           )}
         </td>
       ) : undefined}
@@ -134,8 +134,8 @@ export default function MachineRow({
               suppressHydrationWarning
             >
               {node.online && !node.expired
-                ? "Connected"
-                : new Date(node.lastSeen).toLocaleString()}
+                ? "已连接"
+                : new Date(node.lastSeen).toLocaleString("zh-CN")}
             </p>
             {!(node.online && !node.expired) && (
               <p className="text-xs opacity-50" suppressHydrationWarning>

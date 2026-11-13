@@ -20,7 +20,7 @@ function loadGoHelper(): Promise<void> {
     script.src = WASM_HELPER_URL;
     script.crossOrigin = "anonymous";
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Go WASM helper"));
+    script.onerror = () => reject(new Error("无法加载 Go WASM 辅助模块"));
     document.head.appendChild(script);
   });
 
@@ -38,7 +38,7 @@ export async function connectTailnet(config: TailnetConfig): Promise<IPN> {
   const module = await WebAssembly.instantiateStreaming(fetch(WASM_MODULE_URL), go.importObject);
 
   // The Go process parks on a channel forever, so returning means it died.
-  go.run(module.instance).then(() => config.onPanic("Unexpected shutdown"));
+  go.run(module.instance).then(() => config.onPanic("连接意外关闭"));
 
   const ipn = newIPN({
     controlURL: config.controlURL,
@@ -62,7 +62,7 @@ export async function connectTailnet(config: TailnetConfig): Promise<IPN> {
       },
       notifyNetMap: () => {},
       // Only reached when the auth key was refused and the node wants a human.
-      notifyBrowseToURL: () => reject(new Error("Headscale rejected the pre-auth key")),
+      notifyBrowseToURL: () => reject(new Error("Headscale 拒绝了预授权密钥")),
       notifyPanicRecover: (error) => reject(new Error(error)),
     });
   });

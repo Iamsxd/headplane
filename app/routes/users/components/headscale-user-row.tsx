@@ -56,7 +56,7 @@ export default function HeadscaleUserRow({
       </td>
       <td className="py-2 pl-0.5">
         <p className="text-sm text-mist-600 dark:text-mist-300" suppressHydrationWarning>
-          {new Date(user.createdAt).toLocaleDateString()}
+          {new Date(user.createdAt).toLocaleDateString("zh-CN")}
         </p>
       </td>
       <td className="py-2 pl-0.5">
@@ -66,11 +66,11 @@ export default function HeadscaleUserRow({
           >
             <StatusCircle className="h-4 w-4" isOnline={isOnline} />
             <p suppressHydrationWarning>
-              {isOnline ? "Connected" : new Date(lastSeen).toLocaleString()}
+              {isOnline ? "已连接" : new Date(lastSeen).toLocaleString("zh-CN")}
             </p>
           </span>
         ) : (
-          <p className="text-sm text-mist-600 dark:text-mist-300">No machines</p>
+          <p className="text-sm text-mist-600 dark:text-mist-300">无设备</p>
         )}
       </td>
       <td className="py-2 pr-0.5">
