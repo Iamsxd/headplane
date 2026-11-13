@@ -64,15 +64,19 @@ Nginx, Docker/containerd and their two application launchers were restarted to l
 
 The blog's local HTTPS virtual host still returns HTTP 200. Public domain availability has a separate existing filing/cloud-blocking investigation and is not established by that local check.
 
-## Reboot pending and recovery
+## Reboot completed and recovery
 
-The running kernel remains `6.12.107+deb13-amd64`. Kernel `6.12.116+deb13-amd64`, its initramfs and GRUB entry are installed; a reboot is needed to activate it. The previous kernel was retained. DHCP/networking, D-Bus and logind still have old library mappings; the planned reboot will replace those processes together. They were not restarted individually during remote maintenance. **No reboot was performed or scheduled.**
+The initial package maintenance retained the running `6.12.107+deb13-amd64` kernel and left a reboot pending for the installed `6.12.116+deb13-amd64` kernel and old DHCP/networking, D-Bus and logind library mappings. The previous kernel was retained.
+
+The operator subsequently requested the reboot, issued at **2026-11-13 19:53 CST (11:53 UTC)**. A changed boot ID and `uname -r` confirmed that `6.12.116+deb13-amd64` is now running. Systemd reached `running`, all eight services listed above and all six maintenance timers were active, and there were no failed units or processes retaining deleted system libraries. All three SQLite databases passed read-only `PRAGMA quick_check`.
+
+A fresh private-key SSH connection succeeded on port `23546`; an external authentication probe still advertised only `publickey`. Public HTTPS health, control-route rejection, DERP upgrade/server-key frame and STUN binding passed again. Headplane's anonymous OIDC redirects, Casdoor login and provider discovery also passed. The Windows and Mac clients were online at verification; the phone was not online at that check, and its status immediately before reboot had not been recorded. The private host verification receipt is `verification-after-reboot.json` in the maintenance snapshot directory. Automatic reboot remains disabled.
 
 For SSH-only recovery, use an already authenticated session or Tencent's console and the private `rollback-ssh.py` in the maintenance snapshot after reviewing its scope. It restores only the pre-change drop-in state and validates/reloads SSH. It does not alter the port, authorized keys, application databases or packages. Do not enable password login merely to apply unrelated updates.
 
 Use configuration backups selectively. Do not restore old application databases over live device/account changes to undo an OS configuration change. Package or boot failures may require Tencent console recovery or a separate whole-host snapshot; the configuration archive alone is insufficient for a complete system rollback.
 
-After an approved reboot, reconnect using the same private key on port `23546`, check `uname -r`, service and timer state, then repeat the public protocol verifier:
+For future approved reboots, reconnect using the same private key on port `23546`, check `uname -r`, service and timer state, then repeat the public protocol verifier:
 
 ```sh
 python3 deployment/tencent/ops/tencent-headscale-verify.py --remote --server-name 140.143.127.180
