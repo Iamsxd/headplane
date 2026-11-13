@@ -1,0 +1,18 @@
+[Unit]
+Description=Official Casdoor identity provider (SQLite)
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/casdoor/runtime.env
+ExecStartPre=-/usr/bin/docker rm -f casdoor
+ExecStart=/usr/bin/docker run --rm --name casdoor --read-only --user 1000:1000 --cap-drop=ALL --security-opt=no-new-privileges:true --memory=512m --memory-swap=512m --pids-limit=128 --log-opt=max-size=5m --log-opt=max-file=2 -p 127.0.0.1:18000:8000 -v /etc/casdoor/app.conf:/conf/app.conf:ro -v /var/lib/casdoor:/var/lib/casdoor -v /var/lib/casdoor/sessions:/tmp --tmpfs /logs:uid=1000,gid=1000,mode=700,size=16m --tmpfs /files:uid=1000,gid=1000,mode=700,size=8m ${CASDOOR_IMAGE}
+ExecStop=/usr/bin/docker stop -t 15 casdoor
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

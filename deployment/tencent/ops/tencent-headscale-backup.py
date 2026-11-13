@@ -72,6 +72,25 @@ if Path(headplane_sources['headplane-config.yaml']).exists():
         with closing(sqlite3.connect(destination / 'headplane-persist.db')) as target:
             source.backup(target)
             assert target.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
+casdoor_sources = {
+    'casdoor-app.conf': '/etc/casdoor/app.conf',
+    'casdoor-credentials.json': '/etc/casdoor/credentials.json',
+    'casdoor-runtime.env': '/etc/casdoor/runtime.env',
+    'casdoor.service': '/etc/systemd/system/casdoor.service',
+    'casdoor-nginx.conf': '/etc/nginx/snippets/casdoor-proxy.conf',
+    'casdoor-upstream.conf': '/etc/nginx/snippets/casdoor-upstream.conf',
+}
+if Path('/etc/casdoor/credentials.json').exists():
+    sources.update(casdoor_sources)
+    client_secret = Path('/etc/headplane/oidc-client-secret')
+    if client_secret.exists():
+        sources['headplane-oidc-client-secret'] = str(client_secret)
+    # SQLite's backup API includes committed WAL content without copying a live WAL file.
+    with closing(sqlite3.connect('file:/var/lib/casdoor/casdoor.db?mode=ro', uri=True)) as source:
+        with closing(sqlite3.connect(destination / 'casdoor.db')) as target:
+            source.backup(target)
+            if target.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+                raise RuntimeError('Casdoor backup integrity check failed')
 for name, path in sources.items():
     shutil.copyfile(path, destination / name)
 manifest = {
