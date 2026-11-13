@@ -1,6 +1,6 @@
 # Headplane password and TOTP with Casdoor / SQLite
 
-Status: provider approach selected by the operator; this detailed design awaits approval before implementation. No authentication changes have been deployed.
+Status: detailed design approved by the operator on 2026-11-13; implementation authorized. Authentication deployment remains pending until candidate acceptance and cutover are verified.
 
 ## 中文实施摘要
 
