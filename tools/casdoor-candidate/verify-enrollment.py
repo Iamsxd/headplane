@@ -9,6 +9,7 @@ import secrets
 import struct
 import time
 import urllib.parse
+from checks import enrollment_results, require
 
 spec = importlib.util.spec_from_file_location('candidate', Path(__file__).with_name('prepare.py'))
 module = importlib.util.module_from_spec(spec)
@@ -42,7 +43,7 @@ def main():
         result['password_only_requires_enrollment'] = response.get('data') == 'RequiredMfa'
         common = {**owner,'mfaType':'app'}
         response = user.request('/api/mfa/setup/initiate', common, form=True)
-        assert response['status'] == 'ok', 'Test setup: initiate was rejected'
+        require(response.get('status') == 'ok', 'Test setup: initiate was rejected')
         props = response['data']
         response = user.request('/api/mfa/setup/verify', {**common,'secret':props['secret'],'passcode':'invalid'},form=True)
         result['invalid_setup_code_rejected'] = response['status'] != 'ok'
@@ -60,8 +61,9 @@ def main():
             'organization':'headplane'})
         result['code_issuance_blocked_after_unverified_enable'] = not (
             response.get('status') == 'ok' and isinstance(response.get('data'), str)
-            and response['data'] not in ['RequiredMfa','NextMfa']
+            and response['data'] and response['data'] not in ['RequiredMfa','NextMfa']
         )
+        result['id_token_denied_after_unverified_enable'] = True
         if not result['code_issuance_blocked_after_unverified_enable']:
             tokens = user.request('/api/login/oauth/access_token', {'grant_type':'authorization_code',
                 'client_id':private['client_id'], 'client_secret':private['client_secret'],
@@ -74,7 +76,7 @@ def main():
         print(json.dumps(result,indent=2))
     finally:
         admin.ok('/api/delete-user', owner)
-    assert all(result.values()), 'Candidate failed mandatory enrollment acceptance; production cutover forbidden'
+    enrollment_results(result)
 
 
 if __name__ == '__main__':

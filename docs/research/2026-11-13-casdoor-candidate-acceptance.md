@@ -27,7 +27,7 @@ The final check produced:
 }
 ```
 
-A fresh ordinary test account was prompted for required enrollment after password validation. An invalid dynamic code was rejected by the verification endpoint. However, skipping successful verification and directly calling the activation endpoint succeeded; the same pending browser session could then obtain an authorization code and exchange it with PKCE for an ID token. No valid TOTP or recovery code was submitted during this flow. Only test accounts and in-memory test seeds were used; the script deletes its account in `finally` and prints no credentials or tokens.
+A fresh ordinary test account was prompted for required enrollment after password validation. An invalid dynamic code was rejected by the verification endpoint. However, skipping successful verification and directly calling the activation endpoint succeeded; the same pending browser session could then obtain an authorization code and exchange it with PKCE for an ID token. No valid TOTP was submitted and no recovery code was redeemed as a login factor; provider-generated recovery material was submitted to the setup endpoint. Only test accounts and in-memory test seeds were used; the script deletes its account in `finally` and prints no credentials or tokens.
 
 This demonstrates a failure to enforce verified enrollment. It does **not** establish that an attacker can log into an already enrolled account without its second factor. The normal web UI includes a verification step; that UI step alone does not satisfy the approved server-enforced requirement.
 
@@ -52,6 +52,10 @@ Task 1 fixes are prepared on `feat/casdoor-mfa`: server-side disabled API-key gu
 - Real HTTP candidate checks passed for form and malformed document/`.data` POST rejection with 403/no session cookie, spoofed Basic/proxy principal denial, and both language logged-out pages. Candidate used a consistent dashboard DB copy and was removed afterward.
 
 These fixes and image are **not deployed**. The live image remains `sha256:9ce135fc8b7c06f2c8a930d106639cd00adf44efe8bcf1ac81fdcab339774397`. The current Basic-auth logout behavior therefore remains pending the authentication migration.
+
+Independent branch review confirmed the application guard/cookie changes and provider rejection evidence. Review fixes make acceptance checks survive optimized Python, inspect repeated response fields without case sensitivity, require an authentication redirect and visible translated logout text, stage a fresh loopback-only app with a fresh signing secret and cleared copied sessions, and refuse any existing build output directory instead of deleting it. Regression tests reproduce the original false success under `-O` and deletion of pre-existing language/image sentinels before the fix. Provider-outage API-key form visibility remains an explicitly deferred UI issue: the server rejects disabled login even if that form is shown.
+
+Additional health observation: public dashboard retained trusted HTTPS/Basic protection (401), Headscale `/health` returned 200, the backup/key rotation/certificate timers remained active, and local blog HTTPS with `lovecanl.cn` SNI returned 200. A public blog TLS handshake from the workstation failed in both Python and curl; DNS still pointed to this server. This work made no blog/proxy/firewall changes, and the cause of that separate public connectivity issue was not established.
 
 ## Required decision
 

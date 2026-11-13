@@ -13,7 +13,8 @@ DEPS = Path('/opt/headplane-zh-source')
 
 def replace(path, old, new):
     text = path.read_text()
-    assert old in text, (str(path), old)
+    if old not in text:
+        raise RuntimeError(f'Expected source fragment missing in {path}')
     path.write_text(text.replace(old, new, 1))
 
 
@@ -25,14 +26,15 @@ def command(cwd, name, *args):
 
 
 def source_for(language):
-    assert language in {'zh', 'en'}
+    if language not in {'zh', 'en'}:
+        raise ValueError('Unsupported language')
     target = STAGE / language
     if target.exists():
-        assert target.resolve() == STAGE / language
-        shutil.rmtree(target)
+        raise FileExistsError(f'Refusing to overwrite build source: {target}')
     shutil.copytree(UPSTREAM, target, ignore=shutil.ignore_patterns('node_modules', 'build', '.react-router', '.git'))
     (target / 'node_modules').symlink_to(DEPS / 'node_modules', target_is_directory=True)
-    assert (target / 'pnpm-lock.yaml').read_bytes() == (DEPS / 'pnpm-lock.yaml').read_bytes()
+    if (target / 'pnpm-lock.yaml').read_bytes() != (DEPS / 'pnpm-lock.yaml').read_bytes():
+        raise RuntimeError('Dependency lockfile differs from the pinned build environment')
     shutil.copy2(OVERLAY / 'CHANGELOG.md', target / 'CHANGELOG.md')
     for name in ['hp_ssh.wasm', 'wasm_exec.js']:
         shutil.copy2(DEPS / 'public' / name, target / 'public' / name)
@@ -90,6 +92,10 @@ def source_for(language):
 
 
 def main():
+    # A configurable stage must never authorize deletion of unrelated directories.
+    for name in ['zh', 'en', 'image']:
+        if (STAGE / name).exists():
+            raise FileExistsError(f'Build needs fresh output directories: {STAGE / name}')
     sources = [source_for(language) for language in ['zh', 'en']]
     for source in sources:
         command(source, 'typecheck', 'pnpm', 'run', 'typecheck')
@@ -97,10 +103,9 @@ def main():
         command(source, 'unit', 'pnpm', 'run', 'test:unit')
         command(source, 'build', 'pnpm', 'run', 'build')
     context = STAGE / 'image'
-    # A clean assembly prevents stale resources from earlier builds.
+    # An exclusive fresh assembly prevents stale resources without deleting data.
     if context.exists():
-        assert context.resolve() == STAGE / 'image'
-        shutil.rmtree(context)
+        raise FileExistsError(f'Refusing to overwrite image context: {context}')
     context.mkdir()
     shutil.copytree(sources[0] / 'build', context / 'build')
     shutil.copytree(sources[1] / 'build/server', context / 'english/server')
@@ -112,7 +117,8 @@ def main():
             continue  # private build metadata is not a runtime resource
         destination = context / 'build/client' / relative
         if destination.exists():
-            assert destination.read_bytes() == item.read_bytes(), f'Asset collision: {relative}'
+            if destination.read_bytes() != item.read_bytes():
+                raise RuntimeError(f'Asset collision: {relative}')
         else:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, destination)

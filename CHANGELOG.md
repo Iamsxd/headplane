@@ -6,13 +6,15 @@
 
 - This local build displays the dashboard, device management, users, DNS, access policies, settings and common validation messages in Simplified Chinese, with Chinese dates and relative times.
 
+## Fixes
+
+- Enforce disabled API-key login on the server and protect session cookies, including expiration after logout.
+
 # 0.8.2 (October 22, 2026)
 
 This release contains an important security update for Headplane that protects against the [compromised eMudhra intermediate CAs](https://emudhra.com/en/post/certificate-security-incident) with Node.js 24.22.1 and Go 1.27.3. Any native installations should also upgrade to these versions and rebuild the agent.
 
 ## Fixes
-
-- Enforce disabled API-key login on the server and protect session cookies, including expiration after logout.
 
 - Docker images now ship Node.js 24.22.1 and an agent built on Go 1.27.3 (fixes [GHSA-jhh3-g853-mxjc](https://github.com/tale/headplane/security/advisories/GHSA-jhh3-g853-mxjc), reported by [@trouze](https://github.com/trouze)).
 - A machine's page now requires permission to view machines, like the machines list. Previously anyone signed in could open it by its address.
