@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Guarded native-OIDC cutover with a dashboard-only rollback. Root private state."""
 from importlib.machinery import SourceFileLoader
+from contextlib import closing
 import hashlib
 import json
 import os
@@ -92,14 +93,32 @@ def verify_restore(snapshot):
         shutil.rmtree(stage)
 
 
+def migrate_owner(db, before, new_subject):
+    db.execute('BEGIN IMMEDIATE')
+    current = db.execute('SELECT id,sub,role,caps,headscale_user_id FROM users WHERE id=?', (before['id'],)).fetchone()
+    expected = tuple(before[k] for k in ['id', 'sub', 'role', 'caps', 'headscale_user_id'])
+    require(current == expected, 'Owner identity or permissions changed since preflight')
+    require(not db.execute('SELECT 1 FROM users WHERE sub=? AND id<>?', (new_subject, before['id'])).fetchone(), 'Owner subject collision')
+    db.execute('UPDATE users SET sub=? WHERE id=? AND sub=?', (new_subject, before['id'], before['sub']))
+    db.execute('DELETE FROM auth_sessions')
+
+
 def rollback():
     state = json.loads((ROLLBACK / 'state.json').read_text())
     subprocess.run(['systemctl', 'stop', 'headplane'], check=True)
-    with sqlite3.connect(DB) as db:
-        db.execute('BEGIN IMMEDIATE')
-        db.execute('DELETE FROM auth_sessions')
-        db.execute('UPDATE users SET sub=?,role=?,caps=?,headscale_user_id=? WHERE id=?',
-            (state['owner']['sub'], state['owner']['role'], state['owner']['caps'], state['owner']['headscale_user_id'], state['owner']['id']))
+    try:
+        with closing(sqlite3.connect(DB)) as db, db:
+            db.execute('BEGIN IMMEDIATE')
+            owner = state['owner']
+            current = db.execute('SELECT sub FROM users WHERE id=?', (owner['id'],)).fetchone()
+            require(current is not None and current[0] in [owner['sub'], state['new_subject']], 'Owner subject changed after deployment; refusing rollback')
+            # Only revert the field this deployment changed. Keep later role/caps/link edits.
+            if current[0] == state['new_subject']:
+                db.execute('UPDATE users SET sub=? WHERE id=? AND sub=?', (owner['sub'], owner['id'], state['new_subject']))
+            db.execute('DELETE FROM auth_sessions')
+    except Exception:
+        subprocess.run(['systemctl', 'start', 'headplane'], check=True)
+        raise
     for name, target in FILES.items():
         shutil.copy2(ROLLBACK / name, target)
     subprocess.run(['nginx', '-t'], check=True)
@@ -141,11 +160,7 @@ def main():
         subprocess.run(['systemctl', 'stop', 'headplane'], check=True)
         changed = True
         with sqlite3.connect(DB) as db:
-            db.execute('BEGIN IMMEDIATE')
-            current = db.execute('SELECT sub FROM users WHERE id=?', (owner['id'],)).fetchone()
-            require(current == ('proxy:admin',), 'Owner changed during cutover')
-            db.execute('UPDATE users SET sub=? WHERE id=? AND sub=?', (private['owner_subject'], owner['id'], 'proxy:admin'))
-            db.execute('DELETE FROM auth_sessions')
+            migrate_owner(db, owner, private['owner_subject'])
         FILES['config.yaml'].write_text(cfg.render(private['client_id']))
         env = FILES['runtime.env'].read_text().splitlines()
         require(sum(x.startswith('HEADPLANE_IMAGE=') for x in env) == 1, 'Unexpected image environment')
