@@ -2,7 +2,7 @@
 
 These scripts and templates were recovered from the existing deployment on 2026-11-13. They are tracked here for review and future maintenance; copying them into Git did not deploy a change.
 
-`ops/` preserves the installer, key rotation, backup, public dashboard checks, and Headscale/DERP checks. `templates/` contains configuration with secret **paths**, never secret values. Current authentication is still Nginx Basic authentication with trusted proxy headers; the proposed OIDC/TOTP migration is a separate change.
+`ops/` preserves the installer, key rotation, backup, public dashboard checks, and Headscale/DERP checks. `templates/` contains configuration with secret **paths**, never secret values. Authentication has since migrated to native OIDC with official Casdoor and optional TOTP; see [the current authentication deployment](CASDOOR.md). Public Tailscale DERP regions have been removed; see [private relay selection and adding a backup](DERP.md).
 
 The scripts retain their original server paths and historical staging directories. Do not rerun historical installers or cutover scripts against production. Future releases need their own staging directory and rollback point. Public verifiers read the operator's private login file without printing its contents; they must be adapted when the authentication scheme changes.
 

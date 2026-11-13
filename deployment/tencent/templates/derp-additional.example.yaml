@@ -1,0 +1,14 @@
+# Documentation only. Replace the example host/IP and test the new relay first.
+# Do not load this example into production unchanged.
+regions:
+  998:
+    regionid: 998
+    regioncode: backup-2
+    regionname: Personal Backup Relay
+    nodes:
+      - name: 998a
+        regionid: 998
+        hostname: derp2.example.com
+        ipv4: 203.0.113.20
+        derpport: 443
+        stunport: 3478

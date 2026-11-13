@@ -1,0 +1,17 @@
+# Reference fragment, not a complete Headscale configuration.
+# Applied on 2026-11-13. Keep the existing control, DNS, policy and database settings.
+derp:
+  server:
+    enabled: true
+    region_id: 999
+    region_code: tencent-cn
+    region_name: Tencent Personal Relay
+    verify_clients: true
+    stun_listen_addr: 0.0.0.0:3478
+    private_key_path: /var/lib/headscale/derp_server_private.key
+    automatically_add_embedded_derp_region: true
+    ipv4: 140.143.127.180
+  urls: []
+  paths: []
+  auto_update_enabled: true
+  update_frequency: 3h
