@@ -1,5 +1,9 @@
 # Headplane password and TOTP with Casdoor / SQLite
 
+## Operator override, 2026-11-13
+
+The operator subsequently explicitly instructed: use the **official unmodified Casdoor**, do not fix or fork it, make authenticator MFA **optional per user**, and replace the current login. This supersedes the mandatory enrollment/forced-MFA acceptance requirements below and authorizes deployment without another design approval round. Keep the existing URL/password/owner mapping, SQLite, native OIDC, safe logout, app-side API-key guard and backups. An account without MFA may log in with its password; once the user enables TOTP, fresh logins must require it (or a one-time recovery code). The documented upstream first-enrollment behavior is accepted; do not silently patch the provider. The rest of this document and the rejected-candidate receipt retain historical context.
+
 Status: detailed design approved by the operator on 2026-11-13; implementation authorized. Authentication deployment remains pending until candidate acceptance and cutover are verified.
 
 Candidate result: official v4.27.1 failed server-enforced verified enrollment in isolation; production was not switched. See [runtime findings and required scope decision](../../research/2026-11-13-casdoor-candidate-acceptance.md). A provider fork or weaker requirement is not authorized by this design.

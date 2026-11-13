@@ -8,6 +8,7 @@
 
 ## Fixes
 
+- Hide API-key sign-in when it is disabled, including during an identity-provider outage.
 - Enforce disabled API-key login on the server and protect session cookies, including expiration after logout.
 
 # 0.8.2 (October 22, 2026)

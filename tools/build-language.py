@@ -61,6 +61,14 @@ def source_for(language):
                 'export async function loginAction({ request, context }: Route.LoaderArgs) {\n'
                 '  if (context.get(appConfigContext)?.oidc?.disable_api_key_login) {\n'
                 '    return new Response("API key login is disabled", { status: 403 });\n  }\n')
+        login_page = target / 'app/routes/auth/login/page.tsx'
+        replace(login_page, '    isCookieSecureEnabled: config.server.cookie_secure,',
+                '    isCookieSecureEnabled: config.server.cookie_secure,\n'
+                '    isApiKeyLoginEnabled: !config.oidc?.disable_api_key_login,')
+        replace(login_page, 'const { isCookieSecureEnabled, isOidcConnectorEnabled, oidcErrorCodes, urlState }',
+                'const { isCookieSecureEnabled, isApiKeyLoginEnabled, isOidcConnectorEnabled, oidcErrorCodes, urlState }')
+        replace(login_page, '<Form method="POST">', '{isApiKeyLoginEnabled ? <Form method="POST">')
+        replace(login_page, '</Form>', '</Form> : undefined}')
         replace(target / 'app/root.tsx', 'import { getColorScheme } from "./utils/color-scheme";',
                 'import { getColorScheme } from "./utils/color-scheme";\nimport { UI_LANGUAGE } from "./utils/ui-language";')
         replace(target / 'app/root.tsx', 'lang="en"', 'lang={UI_LANGUAGE}')
@@ -86,7 +94,7 @@ def source_for(language):
         # Language preference tests are shared; upstream English assertions stay unchanged.
         for name in ['language.test.ts', 'language-action.test.ts']:
             shutil.copy2(OVERLAY / 'tests/unit/settings' / name, target / 'tests/unit/settings' / name)
-        for name in ['auth-service.test.ts', 'create-auth.ts', 'mfa-login-boundary.test.ts']:
+        for name in ['auth-service.test.ts', 'create-auth.ts', 'mfa-login-boundary.test.ts', 'login-page.test.ts']:
             shutil.copy2(OVERLAY / 'tests/unit/auth' / name, target / 'tests/unit/auth' / name)
     return target
 

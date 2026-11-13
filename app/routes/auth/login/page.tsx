@@ -62,6 +62,7 @@ export async function loader({ request, context, url }: Route.LoaderArgs) {
 
   return {
     isCookieSecureEnabled: config.server.cookie_secure,
+    isApiKeyLoginEnabled: !config.oidc?.disable_api_key_login,
     isOidcConnectorEnabled,
     oidcErrorCodes,
     urlState,
@@ -78,7 +79,7 @@ function logLoginOidcError(context: string, error: OidcError): void {
 }
 
 export default function Page({ loaderData, actionData }: Route.ComponentProps) {
-  const { isCookieSecureEnabled, isOidcConnectorEnabled, oidcErrorCodes, urlState } = loaderData;
+  const { isCookieSecureEnabled, isApiKeyLoginEnabled, isOidcConnectorEnabled, oidcErrorCodes, urlState } = loaderData;
 
   const [showCookieWarning, setShowCookieWarning] = useState(false);
   const [params] = useSearchParams();
@@ -148,7 +149,7 @@ export default function Page({ loaderData, actionData }: Route.ComponentProps) {
         ) : undefined}
         <Card className="m-4 max-w-md sm:m-0">
           <Card.Title>欢迎使用 Headplane</Card.Title>
-          <Form method="POST">
+          {isApiKeyLoginEnabled ? <Form method="POST">
             <Card.Text>
               输入 API 密钥以登录 Headplane。可在终端中运行{" "}
               <Code>headscale apikeys create</Code> 来生成密钥。
@@ -170,7 +171,7 @@ export default function Page({ loaderData, actionData }: Route.ComponentProps) {
             <Button className="w-full" type="submit" variant="heavy">
               登录
             </Button>
-          </Form>
+          </Form> : undefined}
           {isOidcConnectorEnabled ? (
             <RouterLink to="/oidc/start" prefetch="none" reloadDocument>
               <Button className="mt-2 w-full" disabled={oidcErrorCodes.length > 0} variant="light">
