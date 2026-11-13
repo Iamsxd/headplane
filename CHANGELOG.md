@@ -2,6 +2,8 @@
 
 ## Changes
 
+- Switch between Simplified Chinese and English from the header. Your browser remembers the selected language for a year; switching reloads the current page and preserves its filters.
+
 - This local build displays the dashboard, device management, users, DNS, access policies, settings and common validation messages in Simplified Chinese, with Chinese dates and relative times.
 
 # 0.8.2 (October 22, 2026)

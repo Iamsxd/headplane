@@ -139,7 +139,7 @@ describe("parsePolicy", () => {
 
   test("rejects a policy that is not an object", () => {
     const result = parsePolicy("[]");
-    expect(result).toEqual({ ok: false, error: "The policy must be a JSON object" });
+    expect(result).toEqual({ ok: false, error: "策略必须是 JSON 对象" });
   });
 
   test("tolerates sections with the wrong shape", () => {

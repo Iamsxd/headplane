@@ -18,7 +18,7 @@ describe("headscaleErrorMessage", () => {
     };
 
     expect(headscaleErrorMessage(error)).toBe(
-      "Couldn't reach Headscale. Check that it's running and try again.",
+      "无法连接 Headscale，请检查服务是否运行后重试。",
     );
   });
 
@@ -33,7 +33,7 @@ describe("headscaleErrorMessage", () => {
 
   test("falls back to the status code on an empty body", () => {
     expect(headscaleErrorMessage(apiError(502, "", null))).toBe(
-      "Headscale rejected the change (502).",
+      "Headscale 拒绝了此次更改（502）。",
     );
   });
 

@@ -1,3 +1,4 @@
+import { featureReason } from "~/utils/feature-reason";
 import { data, redirect } from "react-router";
 
 import {
@@ -24,7 +25,7 @@ export async function loader({ request, context, url }: Route.LoaderArgs) {
   const oidc = context.get(oidcContext);
 
   if (oidc.state !== "enabled") {
-    throw data(`OIDC 不可用：${oidc.reason}`, { status: 501 });
+    throw data(`OIDC 不可用：${featureReason(oidc.reason)}`, { status: 501 });
   }
   const service = oidc.value;
 

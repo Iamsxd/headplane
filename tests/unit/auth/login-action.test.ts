@@ -81,7 +81,7 @@ describe("Login action validation", () => {
     } as any)) as LoginResult;
 
     expect(result.success).toBe(false);
-    expect(result.message).toContain("Missing");
+    expect(result.message).toContain("缺少");
   });
 
   test("returns error when api_key is empty string", async () => {
@@ -101,7 +101,7 @@ describe("Login action validation", () => {
     } as any)) as LoginResult;
 
     expect(result.success).toBe(false);
-    expect(result.message).toContain("empty");
+    expect(result.message).toContain("不能为空");
   });
 
   test("returns error when api key not found in database", async () => {
@@ -127,7 +127,7 @@ describe("Login action validation", () => {
     } as any)) as LoginResult;
 
     expect(result.success).toBe(false);
-    expect(result.message).toContain("not found");
+    expect(result.message).toContain("未找到");
   });
 
   test("returns error when api key has expired", async () => {
@@ -154,7 +154,7 @@ describe("Login action validation", () => {
     } as any)) as LoginResult;
 
     expect(result.success).toBe(false);
-    expect(result.message).toContain("expired");
+    expect(result.message).toContain("已过期");
   });
 
   test("returns error when api key has no expiration field", async () => {
@@ -181,7 +181,7 @@ describe("Login action validation", () => {
     } as any)) as LoginResult;
 
     expect(result.success).toBe(false);
-    expect(result.message).toContain("malformed");
+    expect(result.message).toContain("格式异常");
   });
 
   test("handles asterisks in api key prefix from headscale 0.28+", async () => {

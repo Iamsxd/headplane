@@ -7,6 +7,7 @@ import Card from "~/components/card";
 import Code from "~/components/code";
 import Input from "~/components/input";
 import Link from "~/components/link";
+import LanguageSwitcher from "~/components/language-switcher";
 import { appConfigContext, authContext, oidcContext } from "~/server/context";
 import type { OidcError, OidcService } from "~/server/oidc/provider";
 import { useLiveData } from "~/utils/live-data";
@@ -117,6 +118,7 @@ export default function Page({ loaderData, actionData }: Route.ComponentProps) {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center">
+      <div className="absolute top-4 right-4"><LanguageSwitcher /></div>
       <div>
         {urlState?.startsWith("error_") ? (
           <OidcErrorNotice code={urlState} />

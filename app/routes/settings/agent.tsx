@@ -1,3 +1,4 @@
+import { featureReason } from "~/utils/feature-reason";
 import { useFetcher } from "react-router";
 
 import Button from "~/components/button";
@@ -18,7 +19,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   await auth.require(request);
 
   if (agents.state !== "enabled") {
-    return { enabled: false as const, reason: agents.reason };
+    return { enabled: false as const, reason: featureReason(agents.reason) };
   }
 
   const sync = agents.value.lastSync();
@@ -38,7 +39,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   await auth.require(request);
 
   if (agents.state !== "enabled") {
-    return { success: false, error: agents.reason };
+    return { success: false, error: featureReason(agents.reason) };
   }
 
   await agents.value.triggerSync();

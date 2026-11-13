@@ -17,6 +17,7 @@ import { ErrorBanner } from "./components/error-banner";
 import "@fontsource-variable/inter/opsz.css";
 import "./tailwind.css";
 import { getColorScheme } from "./utils/color-scheme";
+import { UI_LANGUAGE } from "./utils/ui-language";
 
 export const meta: MetaFunction = () => [
   { title: "Headplane" },
@@ -40,7 +41,7 @@ export function Layout({ children }: { readonly children: React.ReactNode }) {
   return (
     <LiveDataProvider>
       <html
-        lang="zh-CN"
+        lang={UI_LANGUAGE}
         className={
           loaderData?.colorScheme === "dark"
             ? "dark"

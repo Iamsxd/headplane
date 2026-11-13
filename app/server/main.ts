@@ -16,11 +16,15 @@ import { fileURLToPath } from "node:url";
 import log from "~/utils/log";
 
 import { type StartOptions, composeListener, startHttpServer } from "../../runtime/http";
-import requestListener, { config, dispose } from "./app";
+import requestListener, { config, ctx, dispose } from "./app";
+import { languageDispatch } from "./language-dispatch";
 
 // `import.meta.url` resolves to `build/server/index.js`; the built
 // client lives next to it at `build/client/`.
 const clientDir = resolve(dirname(fileURLToPath(import.meta.url)), "../client");
+const englishModuleUrl = new URL("../../english/server/index.js", import.meta.url).href;
+const englishView = await import(/* @vite-ignore */ englishModuleUrl);
+const localizedListener = languageDispatch(requestListener, englishView.createAppRequestListener(ctx));
 
 let tls: StartOptions["tls"];
 const { tls_cert_path: certPath, tls_key_path: keyPath } = config.server;
@@ -73,7 +77,7 @@ startHttpServer({
     staticRoot: clientDir,
     immutableAssets: true,
     logger: runtimeLogger,
-    requestListener,
+    requestListener: localizedListener,
   }),
   onShutdown: dispose,
 });

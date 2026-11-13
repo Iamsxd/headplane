@@ -1,0 +1,5 @@
+FROM ghcr.io/tale/headplane@sha256:b053a0a6699d0a67be3f0d9bae8e7dbe35ed67ae8448412adcbad7ea49866faa
+LABEL org.opencontainers.image.title="Headplane 0.8.2 Chinese and English"
+LABEL org.opencontainers.image.description="Two language views sharing one initialized backend"
+COPY build /app/build
+COPY english /app/english

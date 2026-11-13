@@ -14,6 +14,7 @@ import {
 import { NavLink, unstable_useRoute as useRoute, useLocation, useSubmit } from "react-router";
 
 import Link from "~/components/link";
+import LanguageSwitcher from "~/components/language-switcher";
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from "~/components/menu";
 import logoBg from "~/logo/dark-bg.svg";
 import logoDark from "~/logo/dark.svg";
@@ -84,10 +85,10 @@ export default function Header({ user, access, configAvailable }: HeaderProps) {
               <source srcSet={logoDark} media="(prefers-color-scheme: light)" />
               <img src={logoBg} alt="Headplane 标志" />
             </picture>
-            <h1 className="text-2xl font-semibold">headplane</h1>
+            <h1 className="hidden text-2xl font-semibold sm:block">headplane</h1>
           </div>
           {showTabs && (
-            <nav className="hidden items-center gap-x-2 overflow-x-auto p-1 text-sm font-medium md:flex">
+            <nav className="hidden items-center gap-x-2 overflow-x-auto p-1 text-sm font-medium lg:flex">
               {tabs.map((tab) => {
                 if (!access[tab.key]) return null;
                 if ((tab.key === "dns" || tab.key === "settings") && !configAvailable) return null;
@@ -117,7 +118,8 @@ export default function Header({ user, access, configAvailable }: HeaderProps) {
             </nav>
           )}
         </div>
-        <div className="ml-auto grid shrink-0 grid-cols-2 gap-x-4">
+        <div className="ml-auto flex shrink-0 items-center gap-x-2 sm:gap-x-4">
+          <LanguageSwitcher />
           <Menu>
             <MenuTrigger className="size-8 rounded-full p-1">
               <CircleQuestionMark className="w-5" />
@@ -194,7 +196,7 @@ export default function Header({ user, access, configAvailable }: HeaderProps) {
         </div>
       </div>
       {showTabs && (
-        <div className="block overflow-x-auto p-2 md:hidden">
+        <div className="block overflow-x-auto p-2 lg:hidden">
           <nav className="flex items-center gap-x-2 text-sm font-medium">
             {tabs.map((tab) => {
               if (!access[tab.key]) return null;
