@@ -1,6 +1,6 @@
 # Headplane account login and TOTP design
 
-Status: proposed, awaiting design approval. No authentication changes have been deployed.
+Status: withdrawn proposal, not approved or deployed. On 2026-11-13 the operator requested a lighter alternative without a separate PostgreSQL service. See [the replacement candidate research](../../research/2026-11-13-mfa-alternatives.md). The Keycloak design below is retained as historical context and is not an implementation instruction.
 
 ## Intent and decisions
 
