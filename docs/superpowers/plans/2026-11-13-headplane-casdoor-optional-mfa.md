@@ -1,6 +1,6 @@
 # Casdoor Optional MFA Deployment Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Replace cached Basic login with official Casdoor account login and user-selected TOTP.
 
@@ -32,41 +32,41 @@
 **Files:** `app/routes/auth/login/page.tsx`, `tools/build-language.py`, `tests/unit/auth/login-page.test.ts`, `CHANGELOG.md`.
 **Interfaces:** Login loader returns `isApiKeyLoginEnabled: boolean`; page renders the API-key form only if true. Existing shared backend/dual-view architecture and app guard/cookie fixes remain.
 
-- [ ] Add a failing loader/SSR or rendered response test for a disabled key login when provider discovery fails; retain enabled behavior.
-- [ ] Implement the explicit flag and conditional form in both views; run focused tests then full typecheck/lint/unit/build in a fresh stage, assemble image.
-- [ ] Commit app readiness changes with tests and changelog.
+- [x] Add a failing loader/SSR or rendered response test for a disabled key login when provider discovery fails; retain enabled behavior.
+- [x] Implement the explicit flag and conditional form in both views; run focused tests then full typecheck/lint/unit/build in a fresh stage, assemble image.
+- [x] Commit app readiness changes with tests and changelog.
 
 ### Task 2: Provision initialized official Casdoor
 
 **Files:** `deployment/tencent/ops/casdoor-setup.py`, templates `casdoor.service`, `casdoor-proxy.conf`, deployment guide.
 **Interfaces:** Root-only setup `prepare|configure|expose|inspect` writes protected `/etc/casdoor` config/credentials and `/var/lib/casdoor` SQLite/session data, never emits secrets. Official runtime starts through systemd with 512 MiB limit and loopback published port. Organization uses TOTP rule `Optional` and zero remembered-factor hours. Stable owner subject is saved privately for migration.
 
-- [ ] Initialize random maintenance credentials and SQLite privately; provision ordinary owner with current password, dedicated OIDC application, strong generated signing cert, exact redirects, authorization-code/PKCE only.
-- [ ] Disable demo/signup/bootstrap and restrict maintenance identity to local trusted proxy IP. Add `/auth/` Nginx routes while leaving existing `/admin/` protection intact.
-- [ ] Verify trusted public HTTPS discovery/JWKS/asset paths and account UI, secure scoped cookies, private management APIs and no extra public listener.
+- [x] Initialize random maintenance credentials and SQLite privately; provision ordinary owner with current password, dedicated OIDC application, strong generated signing cert, exact redirects, authorization-code/PKCE only.
+- [x] Disable demo/signup/bootstrap and restrict maintenance identity to local trusted proxy IP. Add `/auth/` Nginx routes while leaving existing `/admin/` protection intact.
+- [x] Verify trusted public HTTPS discovery/JWKS/asset paths and account UI, secure scoped cookies, private management APIs and no extra public listener.
 
 ### Task 3: Verify official optional MFA and federated logout
 
 **Files:** `deployment/tencent/ops/verify-casdoor.py`, candidate setup; no provider source modifications.
 **Interfaces:** Disposable test account + isolated Headplane database at loopback candidate port; temporary HTTPS candidate routing reuses `/admin/oidc/callback` with an exact test-only route/header, without exposing copied sessions or changing live owner auth. Redacted receipts gate cutover.
 
-- [ ] Test password-only OIDC success for unenrolled test user, exact stable subject/owner preservation, both languages and no API-key bypass.
-- [ ] Through official endpoints/UI enable TOTP with a real generated test code; verify wrong/missing code rejection, valid code login, recovery accepted once and rejected on reuse, and optional disable flow.
-- [ ] Verify real callback issuer/signature/audience/nonce, mismatched state and reused code rejection, logout revocation/current provider session and stable logged-out page. Remove test seeds/accounts/sessions before delivery.
+- [x] Test password-only OIDC success for unenrolled test user, exact stable subject/owner preservation, both languages and no API-key bypass.
+- [x] Through official endpoints/UI enable TOTP with a real generated test code; verify wrong/missing code rejection, valid code login, recovery accepted once and rejected on reuse, and optional disable flow.
+- [x] Verify real callback issuer/signature/audience/nonce, mismatched state and reused code rejection, logout revocation/current provider session and stable logged-out page. Remove test seeds/accounts/sessions before delivery.
 
 ### Task 4: Back up and cut over
 
 **Files:** `deployment/tencent/ops/deploy-casdoor.py`, existing `tencent-headscale-backup.py`, nonsecret production config/proxy templates.
 **Interfaces:** Deployment records private rollback state, asserts expected single owner `proxy:admin` and Headscale link `1`, changes only its subject in a transaction, deletes old app sessions, replaces Basic/proxy auth with verified native OIDC and immutable image. Rollback restores only dashboard config/owner mapping; no Headscale DB restore.
 
-- [ ] Add consistent provider SQLite backup plus protected config/signing/client secrets/service/image manifests to daily backup; test integrity and isolated restore.
-- [ ] Snapshot devices/keys/config/services and create a fresh pre-cutover backup, guarded owner migration, `nginx -t`, switch and verify actual production owner callback/permissions.
-- [ ] Confirm HTTPS login/logout, owner unchanged, optional MFA page, language switching, control/DERP/STUN, timers/monitoring and protected backups. Roll back scoped dashboard changes if acceptance fails.
+- [x] Add consistent provider SQLite backup plus protected config/signing/client secrets/service/image manifests to daily backup; test integrity and isolated restore.
+- [x] Snapshot devices/keys/config/services and create a fresh pre-cutover backup, guarded owner migration, `nginx -t`, switch and verify actual production owner callback/permissions.
+- [x] Confirm HTTPS login/logout, owner unchanged, optional MFA page, language switching, control/DERP/STUN, timers/monitoring and protected backups. Roll back scoped dashboard changes if acceptance fails.
 
 ### Task 5: Review and deliver
 
-- [ ] Fresh read-only whole-branch review; fix material findings and verify each fix.
-- [ ] Secret/diff checks, meaningful commits and push; record deployed immutable IDs and recovery instructions. Report actual live URL, same credentials, where to enable optional TOTP, and any remaining limitation.
+- [x] Fresh read-only whole-branch review; fix material findings and verify each fix.
+- [x] Secret/diff checks, meaningful commits and push; record deployed immutable IDs and recovery instructions. Report actual live URL, same credentials, where to enable optional TOTP, and any remaining limitation.
 
 ## Execution
 

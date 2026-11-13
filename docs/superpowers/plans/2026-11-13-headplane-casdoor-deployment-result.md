@@ -9,7 +9,7 @@ The runtime and recovery instructions are in [the deployment guide](../../../dep
 - Both languages passed typecheck, lint, 300 unit tests and build using pinned Node 24.22.1 / pnpm 10.4.0.
 - All 13 official-provider optional-MFA checks passed: password-only login while unenrolled, code enrollment, missing/wrong factor rejection after enrollment, valid TOTP, recovery once only and optional disable.
 - All 11 private candidate OIDC checks passed with normal certificate validation, real signed callback, wrong state/reused code rejection, bilingual authenticated pages, copied-cookie revocation, provider logout and identical owner role/caps/link.
-- All 14 production checks passed, including original owner preservation, device/key/config identity hashes, services, STUN and maintenance timers. Komari is active.
+- All 13 production checks passed, including original owner preservation, device/key/config identity hashes, services, STUN and maintenance timers. Komari is active.
 - Consistent backups of the three SQLite databases passed integrity checks, and a temporary restored official Casdoor instance loaded the expected client and owner independently.
 - An external workstation verified blocked provider management/signup/bootstrap endpoints, masked public application credentials and normal HTTPS discovery/JWKS. The maintenance identity was denied for an external forwarded client IP.
 - Redacted detailed receipts remain under `/root/headplane-optional-20261113/`. Private runtime/recovery material is excluded from Git.
