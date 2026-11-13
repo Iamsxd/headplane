@@ -37,10 +37,10 @@
 
 **Interfaces:** Existing `loginAction(args)` consults `appConfigContext` before accessing the form or Headscale. `createAuthService` sets HttpOnly and SameSite=Lax centrally for creation and destruction. Both language builds apply shared changes.
 
-- [ ] Add disabled-login tests asserting no form parsing, Headscale calls or session creation, including malformed requests; retain enabled successful login coverage. Add session creation/destruction cookie assertions.
-- [ ] Run focused unit tests on the pinned remote build environment; save expected failing output.
-- [ ] Implement minimal guard and cookie defaults, with explicit English build patches and shared test propagation. Add user-facing changelog entry.
-- [ ] Run focused tests, typecheck and lint; commit `fix(auth): enforce OIDC-only login and secure session cookies`.
+- [x] Add disabled-login tests asserting no form parsing, Headscale calls or session creation, including malformed requests; retain enabled successful login coverage. Add session creation/destruction cookie assertions.
+- [x] Run focused unit tests on the pinned remote build environment; save expected failing output.
+- [x] Implement minimal guard and cookie defaults, with explicit English build patches and shared test propagation. Add user-facing changelog entry.
+- [x] Run focused tests, typecheck and lint; commit `fix(auth): enforce OIDC-only login and secure session cookies`.
 
 ### Task 2: Stage an initialized private provider
 
@@ -100,3 +100,5 @@
 ## Execution and self-review
 
 Operator approved deployment of the concrete design. Execute inline in the existing suitable checkout with a focused feature branch, without another permission round. Review coverage includes all design sections: authentication changes (1), provider and policy (2–3), logout (4), migration/backup/rollback/services (5), operator enrollment and Git evidence (6). Runtime inspection may settle provider-specific details within these constraints; new material incompatibilities must be reported rather than hidden.
+
+Current gate: official candidate failed verified-enrollment acceptance. See [observed findings](../../research/2026-11-13-casdoor-candidate-acceptance.md). Tasks 2–6 remain incomplete; production cutover is forbidden until the operator resolves the provider-fork constraint or selects a compatible provider.

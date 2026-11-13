@@ -2,6 +2,8 @@
 
 Status: detailed design approved by the operator on 2026-11-13; implementation authorized. Authentication deployment remains pending until candidate acceptance and cutover are verified.
 
+Candidate result: official v4.27.1 failed server-enforced verified enrollment in isolation; production was not switched. See [runtime findings and required scope decision](../../research/2026-11-13-casdoor-candidate-acceptance.md). A provider fork or weaker requirement is not authorized by this design.
+
 ## 中文实施摘要
 
 - 使用 Casdoor＋SQLite，新增一个认证服务；SQLite 是本地数据库文件，无需独立数据库服务器。

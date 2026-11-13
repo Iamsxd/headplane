@@ -1,0 +1,11 @@
+# Private candidate checks
+
+These are Debian/Tencent-specific **disposable candidate** tools, not a production installer. They do not change Nginx, systemd, the live dashboard configuration or the owner mapping. Run as root only on the intended host, in a fresh private staging directory. Runtime passwords, database files, session files and test seeds must remain outside Git.
+
+`prepare.py` expects the pinned upstream `conf/app.conf` at `/root/headplane-mfa-20261113/casdoor-default.conf` and the verified official amd64 image config digest `sha256:3af7268ddfcfac032bfff4fc67acaea284278269c6caf5bc761609ac25a6596b` already loaded. It refuses to overwrite its existing candidate directory, generates random private credentials, initializes an ordinary disposable user, and binds only `127.0.0.1:18000`. It does not provision the production dashboard owner.
+
+`verify-enrollment.py` imports the adjacent `prepare.py`, reads only the candidate credential file, creates and deletes a separate disposable test account, and prints only boolean acceptance results. It deliberately attempts activation without a successful TOTP verification, then checks authorization-code and ID-token denial. **Exit 1 means reject the candidate, not bypass the acceptance gate.** The official v4.27.1 candidate failed this check on 2026-11-13. Do not expose it or cut over production based on its documentation alone.
+
+`verify-headplane-boundary.py` expects the prepared bilingual Headplane image `headplane-local:0.8.2-mfa-prepared-20261113`. It uses a consistent copy of the live dashboard database, disabled proxy auth and dummy OIDC client settings. It binds loopback 3002, verifies actual document/data API-key POST rejection and bilingual logged-out pages, then stops/removes its container. It does not prove provider interoperability or federated logout.
+
+See [candidate findings](../../docs/research/2026-11-13-casdoor-candidate-acceptance.md) for the exact evidence, limitations and pending decision. After a rejected run, stop/remove `casdoor-mfa-candidate` and delete its private disposable state under `/root/headplane-mfa-20261113/casdoor-candidate`. Keep the redacted acceptance JSON separately. Never run these tools against a production provider database or credentials.
