@@ -14,3 +14,19 @@ node_modules
 /docs/.vitepress/cache/
 /.direnv
 /vendor
+
+# Local references, credentials and runtime data are never source artifacts.
+/.upstream/
+.env.*
+!.env.example
+*.pem
+*.key
+*.htpasswd
+*admin-login*.txt
+*runtime.env
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+__pycache__/
+*.pyc

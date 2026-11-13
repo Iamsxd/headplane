@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Headscale backup
+
+[Timer]
+OnCalendar=*-*-* 04:15:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=300
+Unit=headscale-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=Headplane dashboard for native Headscale
+Requires=docker.service
+After=docker.service headscale.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/headplane/runtime.env
+ExecStartPre=-/usr/bin/docker rm -f headplane
+ExecStart=/usr/bin/docker run --rm --name headplane --init --network host --user ${HEADPLANE_UID}:${HEADPLANE_GID} --group-add ${HEADSCALE_GID} --read-only --tmpfs /tmp:rw,noexec,nosuid,size=32m --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 512m --log-opt max-size=10m --log-opt max-file=3 --mount type=bind,src=/etc/headplane,dst=/etc/headplane,readonly --mount type=bind,src=/etc/headscale,dst=/etc/headscale,readonly --mount type=bind,src=/var/lib/headplane,dst=/var/lib/headplane ${HEADPLANE_IMAGE}
+ExecStop=/usr/bin/docker stop -t 15 headplane
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Consistent Headscale database and identity backup
+After=headscale.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/sbin/headscale-backup.py
+UMask=0077
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+# SQLite WAL readers may need to create shared-memory sidecar files.
+# The backup script still opens the source database with mode=ro.
+ReadWritePaths=/var/backups/headscale /var/lib/headscale -/var/lib/headplane

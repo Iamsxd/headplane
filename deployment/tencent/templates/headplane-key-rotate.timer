@@ -1,0 +1,10 @@
+[Unit]
+Description=Rotate Headplane API credential monthly before90-day expiry
+
+[Timer]
+OnCalendar=*-*-01 03:25:00
+RandomizedDelaySec=5m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

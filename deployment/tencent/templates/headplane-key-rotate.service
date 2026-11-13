@@ -1,0 +1,10 @@
+[Unit]
+Description=Rotate private Headplane API credential
+Requires=headscale.service docker.service
+After=headscale.service docker.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 /usr/local/sbin/headplane-key-rotate.py
+TimeoutStartSec=90
