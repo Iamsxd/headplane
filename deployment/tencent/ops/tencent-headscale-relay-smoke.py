@@ -17,6 +17,9 @@ import uuid
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('binary_directory', type=Path)
+    parser.add_argument('--endpoint', default='https://140.143.127.180')
+    parser.add_argument('--peer-endpoint', help='Second client control URL, if different from the first')
+    parser.add_argument('--derp-host', default='140.143.127.180', help='Expected host for region 999')
     args = parser.parse_args()
     if os.geteuid() != 0:
         parser.error('Run as root')
@@ -63,11 +66,12 @@ def main():
                 if process.poll() is not None:
                     raise RuntimeError(f'Client {index} exited; see private logs')
                 time.sleep(0.1)
-            cli(index, 'up', '--login-server=https://140.143.127.180',
+            endpoint = (args.peer_endpoint or args.endpoint) if index else args.endpoint
+            cli(index, 'up', '--login-server=' + endpoint,
                 '--auth-key=file:' + str(keyfile), '--accept-dns=false', '--accept-routes=false',
                 '--netfilter-mode=off', f'--hostname=ip-smoke-{test_id}-{index}', '--timeout=30s', timeout=40)
             keyfile.unlink()
-            print(f'Temporary client {index}: enrolled with trusted IP HTTPS', flush=True)
+            print(f'Temporary client {index}: enrolled at {endpoint}', flush=True)
         status = json.loads(cli(1, 'status', '--json'))
         peer = status['TailscaleIPs'][0]
         for attempt in range(10):
@@ -83,7 +87,8 @@ def main():
             raise RuntimeError('No verified traffic via DERP(tencent-cn); see private logs')
         derp_map = json.loads(cli(0, 'debug', 'derp-map'))
         region = derp_map['Regions']['999']
-        assert region['Nodes'][0]['HostName'] == '140.143.127.180', region
+        assert region['Nodes'][0]['HostName'] == args.derp_host, region
+        assert set(derp_map['Regions']) == {'999'}, 'Unexpected public relay regions'
         assert not region['Nodes'][0].get('InsecureForTests', False), region
         (logs / 'result.txt').write_text(output + '\nEmbedded DERP region: ' + json.dumps(region))
         print('PASS: two disposable clients exchanged encrypted probes via self-hosted DERP.', flush=True)

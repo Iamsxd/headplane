@@ -1,14 +1,14 @@
 # Private relay selection and adding a second relay
 
-## Current production state (2026-11-13)
+## Production history
 
-The operator requested removal of all public Tailscale DERP regions. Production `/etc/headscale/config.yaml` now has `derp.urls: []` and `derp.paths: []`, with the existing embedded region `999 / tencent-cn / 140.143.127.180` enabled and automatically added. The automatic refresh setting remains enabled; there are no public DERP-map URLs to fetch. This change concerns relay selection, not the Tailscale client's separate diagnostic/telemetry settings.
+On 2026-11-13 the operator requested removal of all public Tailscale DERP regions. Production `/etc/headscale/config.yaml` has `derp.urls: []` and `derp.paths: []`, with the existing embedded region `999 / tencent-cn` enabled and automatically added. The automatic refresh setting remains enabled with an empty URL list. Since the [2026-11-25 domain cutover](DOMAIN.md), the relay advertises `hs.lovecanl.cn` with the existing public IPv4 `140.143.127.180`.
 
 The reference [DERP configuration fragment](templates/headscale-derp-private.yaml) contains no credentials. It is not a complete Headscale configuration and must not overwrite unrelated control/DNS/policy/database settings.
 
 Before the change, the consistent backup completed at `/var/backups/headscale/20261113T091049535091Z`; the private original configuration is also in `/root/headscale-private-derp-20261113/config-before.yaml`. Configuration validation passed before restarting only Headscale. Device IDs 3/4/5, their keys and server identity/DERP keys were unchanged; all three clients reconnected. Existing Nginx/Headplane/Casdoor/Komari services stayed active.
 
-The actual Windows Tailscale 1.104.7 client received exactly one DERP region, `999 / tencent-cn`. Its DERP diagnostic established an authenticated relay connection and received an IPv4 STUN response. The Windows-to-phone probe returned `via DERP(tencent-cn)` at 181 ms, 78 ms and 68 ms. Public HTTPS health, control routing, DERP upgrade/server-key frame and STUN binding checks passed. The diagnostic's IPv6 attempt has no usable address because this relay is currently advertised by an IPv4 literal; IPv6 connectivity was not established or claimed.
+At the time of the November 13 change, the Windows Tailscale 1.104.7 client received exactly one DERP region, `999 / tencent-cn`. Its DERP diagnostic established an authenticated relay connection and received an IPv4 STUN response. The Windows-to-phone probe returned `via DERP(tencent-cn)` at 181 ms, 78 ms and 68 ms. Public HTTPS health, control routing, DERP upgrade/server-key frame and STUN binding checks passed. Those checks established IPv4 connectivity.
 
 ## Adding another public server
 
