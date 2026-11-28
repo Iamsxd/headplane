@@ -29,3 +29,17 @@ Rollback uses the IP endpoint again and can briefly interrupt dashboard access a
 - Two disposable userspace clients, one using the domain and one using the IP, registered and exchanged encrypted probes via `DERP(tencent-cn)`. Both ran on the server. Their map contained only region 999 with `hs.lovecanl.cn`, and the test user, nodes and keys were removed.
 - The new public OIDC discovery, authorization and callback use the domain. A temporary ordinary account signed in through Headplane, enrolled TOTP, signed in with a dynamic code, and signed out through Casdoor. The temporary account was removed. The real administrator's existing enrollment was checked without using their authenticator.
 - All three original device identities, the Headscale and relay keys, the dashboard user roles, and the existing owner password and TOTP data matched the pre-cutover snapshot. The Mac client was online at the post-cutover check. Three SQLite checks and all 43 post-cutover manifest hashes passed.
+
+## Tencent host as a Tailscale client
+
+On 2026-11-28 the Debian host joined its own Headscale network as `tencent-gateway`, node 8, under `owner`. Its assigned Tailscale IPv4 is `100.64.0.6`. Tailscale 1.104.7 was installed through the signed official Debian stable repository and `tailscaled.service` is enabled. Enrollment used `https://hs.lovecanl.cn` and a single-use authorization key that was removed afterward.
+
+The client uses `--accept-dns=false --accept-routes=false --shields-up=true`. The host keeps its normal DNS and public default route, and can initiate connections to peers. Shields Up blocks incoming connections from peers to the host. The host advertises no routes and does not act as a Tailscale exit node. During verification, it reached the Windows peer through `DERP(tencent-cn)` and the public blog, authentication discovery, control, DERP and STUN probes passed.
+
+For a new Linux home server, install Tailscale using the [official Linux instructions](https://tailscale.com/kb/1031/install-linux), then run:
+
+```sh
+sudo tailscale up --login-server=https://hs.lovecanl.cn --hostname=home-server --accept-dns=false --accept-routes=false
+```
+
+Copy the registration link and, in [Headplane](https://hs.lovecanl.cn/admin/machines), use **设备 → 添加设备 → 注册设备密钥** and select `owner`. Use `tailscale ip -4` on the home server to obtain its address. From the Tencent host, use `tailscale ping <home-tailscale-ip>` and then test the intended backend port, for example `curl http://<home-tailscale-ip>:8080/`. This enrollment prepares private connectivity. A public Nginx route for a home service is a separate step after that service is reachable and its exposure is agreed.
